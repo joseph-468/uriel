@@ -3,7 +3,7 @@
 #include "../include/uriel.h"
 
 int main(int argc, char *argv[]) {
-	Uriel::init();
+	Uriel::init("Uriel Test");
 
 	bool running = true;
 	while (running) {
@@ -17,6 +17,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	SDL_Quit();
+	Uriel::quit();
 	return 0;
 }
