@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SDL.h>
 
 #include "../include/uriel.h"
@@ -5,13 +6,12 @@
 int main(int argc, char *argv[]) {
 	Uriel::init("Uriel Test");
 
-	bool running = true;
-	while (running) {
+	while (Uriel::tick()) {
 		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
+		while (Uriel::getEvent(event)) {
 			switch (event.type) {
-				case SDL_QUIT: {
-					running = false;
+				default: {
+					std::cout << event.type << std::endl;
 				} break;
 			}
 		}
