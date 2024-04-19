@@ -142,10 +142,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\renderer.cpp" />
     <ClCompile Include="src\uriel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\camera.h" />
+    <ClInclude Include="include\renderer.h" />
     <ClInclude Include="include\uriel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

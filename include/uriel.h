@@ -1,9 +1,21 @@
 #pragma once
 
 #include <SDL.h>
+#include <SDL_image.h>
+
+#include "renderer.h"
+#include "camera.h"
 
 namespace Uriel {
-	extern bool running;
+	/// <summary>
+	/// Delta time is calculated within the tick function. The initial value is 0.
+	/// </summary>
+	extern double deltaTime;
+	
+	/// <summary> A pointer to the camera that will be rendered to the screen.
+	/// The game will crash if no value is set before the first tick()
+	/// </summary>
+	extern Camera *activeCamera;
 
 	/// <summary>
 	/// Initializes SDL and creates a window.
@@ -36,8 +48,8 @@ namespace Uriel {
 	void quit();
 
 	/// <summary>
-	/// General update function that should be called every time the game is updated.
-	/// Updates the event queue, keyboard state, and quitting.
+	/// General update function that should be called every frame.
+	/// Updates the event queue, presents the frame buffer, and handles window related events.
 	/// The main game loop should be contained in a while loop with the condition Uriel::tick().
 	/// </summary>
 	/// <returns>The value of Uriel::running.</returns>
