@@ -1,4 +1,3 @@
-#include <iostream>
 #include <vector>
 #include <array>
 
@@ -8,13 +7,17 @@ namespace Uriel {
 	constexpr const size_t MAX_EVENTS = 256; // Maximum number of events which can be processed per frame. Usually only about 32 is required.
 	constexpr const SDL_Event NULL_EVENT = { .type = 0 };
 
-	bool running;
-	SDL_Window *window;
-	SDL_Renderer *renderer;
+	bool running = false;
+	float deltaTime = 0;
+
+	SDL_Window *window = nullptr;
+	SDL_Renderer *renderer = nullptr;
 	int windowWidth, windowHeight;
 	float windowHalfWidth, windowHalfHeight;
-	double deltaTime;
+
+	SDL_Rect viewport;
 	Camera *activeCamera = nullptr;
+	bool maintainAspectRatio = true;
 
 	size_t currentEvent;
 	std::array<SDL_Event, MAX_EVENTS> eventQueue;
@@ -26,6 +29,28 @@ namespace Uriel {
 		windowHeight = height;
 		windowHalfWidth = static_cast<float>(width) / 2;
 		windowHalfHeight= static_cast<float>(height) / 2;
+	}
+
+	void resizeViewport() {
+		float windowWidthRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+		float cameraWidthRatio = activeCamera->width / activeCamera->height;
+		float widthRatio = windowWidthRatio / cameraWidthRatio;
+		float heightRatio = 1 / widthRatio;
+
+		viewport.w = windowWidth;
+		viewport.h = windowHeight;
+		viewport.x = 0;
+		viewport.y = 0;
+		if (widthRatio > 1) {
+			viewport.w = static_cast<int>(windowWidth / widthRatio);
+			viewport.x = (windowWidth - viewport.w) / 2;
+		}
+		else if (heightRatio > 1) {
+			viewport.h = static_cast<int>(windowHeight / heightRatio);
+			viewport.y = (windowHeight - viewport.h) / 2;
+		}
+
+		SDL_RenderSetViewport(renderer, &viewport);
 	}
 
 	void init(const int width, const int height, const char *title) {
@@ -42,7 +67,7 @@ namespace Uriel {
 			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 		renderer = SDL_CreateRenderer(window, -1, 0);
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 		running = true;
 	}
@@ -86,6 +111,7 @@ namespace Uriel {
 			else if (event.type == SDL_WINDOWEVENT) {
 				if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
 					updateWindowSize(event.window.data1, event.window.data2);
+					resizeViewport();
 				}
 			}
 			else if (event.type == SDL_KEYDOWN) {
@@ -101,7 +127,7 @@ namespace Uriel {
 
 		previousTime = currentTime;
 		currentTime = SDL_GetPerformanceCounter();
-		deltaTime = static_cast<double>(currentTime - previousTime) * 1000 / SDL_GetPerformanceFrequency();
+		deltaTime = static_cast<float>(currentTime - previousTime) * 1000 / SDL_GetPerformanceFrequency();
 
 		return running;
 	}
@@ -115,19 +141,24 @@ namespace Uriel {
 		return true;
 	}
 
-	bool keyIsDown(SDL_Scancode key) {
+	bool keyIsDown(const SDL_Scancode key) {
 		return currentKeyboardState[key] == SDL_PRESSED;
 	}
 
-	bool keyIsUp(SDL_Scancode key) {
+	bool keyIsUp(const SDL_Scancode key) {
 		return currentKeyboardState[key] == SDL_RELEASED;
 	}
 
-	bool keyIsPressed(SDL_Scancode key) {
+	bool keyIsPressed(const SDL_Scancode key) {
 		return currentKeyboardState[key] == SDL_PRESSED && previousKeyboardState[key] == SDL_RELEASED;
 	}
 
-	bool keyIsReleased(SDL_Scancode key) {
+	bool keyIsReleased(const SDL_Scancode key) {
 		return currentKeyboardState[key] == SDL_RELEASED && previousKeyboardState[key] == SDL_PRESSED;
+	}
+
+	void setActiveCamera(Camera &camera) {
+		activeCamera = &camera;
+		resizeViewport();
 	}
 }

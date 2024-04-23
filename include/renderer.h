@@ -1,8 +1,7 @@
 #pragma once
 
 #include <SDL.h>
-
-#include "uriel.h"
+#include <string>
 
 namespace Uriel {
 	enum class TextureMappingStyle {
@@ -21,6 +20,4 @@ namespace Uriel {
 		SDL_Texture *texture;
 		TextureMappingStyle mappingStyle;
 	};
-
-	void drawSprite(const Sprite &sprite, const float x, const float y, const float width, const float height);
 }

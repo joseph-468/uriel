@@ -2,20 +2,22 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <string>
 
 #include "renderer.h"
 #include "camera.h"
 
 namespace Uriel {
 	/// <summary>
-	/// Delta time is calculated within the tick function. The initial value is 0.
+	/// Delta time in milliseconds.
+	/// This is calculated within the tick function.
 	/// </summary>
-	extern double deltaTime;
-	
+	extern float deltaTime;
+
 	/// <summary> A pointer to the camera that will be rendered to the screen.
-	/// The game will crash if no value is set before the first tick()
+	/// If true then if the window doesn't have the same aspect ratio as the active camera there will be black bars. 
 	/// </summary>
-	extern Camera *activeCamera;
+	extern bool maintainAspectRatio;
 
 	/// <summary>
 	/// Initializes SDL and creates a window.
@@ -67,26 +69,44 @@ namespace Uriel {
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key is being held down.</returns>
-	bool keyIsDown(SDL_Scancode key);
+	bool keyIsDown(const SDL_Scancode key);
 
 	/// <summary>
 	/// Checks whether a key is currently not held down. 
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key is not being held down.</returns>
-	bool keyIsUp(SDL_Scancode key);
+	bool keyIsUp(const SDL_Scancode key);
 
 	/// <summary>
 	/// Checks whether a key has just been pressed. 
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key is being held down and wasn't being held down the previous tick.</returns>
-	bool keyIsPressed(SDL_Scancode key);
+	bool keyIsPressed(const SDL_Scancode key);
 
 	/// <summary>
 	/// Checks whether a key has just been released. 
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key isn't being held down and wasn't being held down the previous tick.</returns>
-	bool keyIsReleased(SDL_Scancode key);
+	bool keyIsReleased(const SDL_Scancode key);
+
+	/// <summary>
+	/// Sets the camera that will be used by the renderer.
+	/// The camera is internally a pointer to the camera so it's important that the camera doesn't go out of scope.
+	/// </summary>
+	/// <param name="camera">A reference to the camera.</param>
+	void setActiveCamera(Camera &camera);
+
+	/// <summary>
+	/// Draws a sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
+	/// </summary>
+	/// <param name="sprite">A reference to the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in game units.</param>
+	/// <param name="y">The y position of the sprite in game units.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	void drawSprite(const Sprite &sprite, const float x, const float y, const float width, const float height);
 }
