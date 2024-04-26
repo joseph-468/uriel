@@ -13,30 +13,42 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\engine">
+      <UniqueIdentifier>{ff010492-bf22-454f-b816-786e7930fb32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game">
+      <UniqueIdentifier>{29bc78f0-bf90-41c7-a08c-6825f17d49dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{af7596a9-c3a5-489f-9f95-cb5cb6a08739}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{1f8f1078-bffa-4a60-8eba-e5b93409ac67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="game\src\main.cpp">
+      <Filter>Source Files\game</Filter>
     </ClCompile>
-    <ClCompile Include="src\uriel.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="engine\src\camera.cpp">
+      <Filter>Source Files\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="engine\src\renderer.cpp">
+      <Filter>Source Files\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\camera.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="engine\src\uriel.cpp">
+      <Filter>Source Files\engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\uriel.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="engine\include\camera.h">
+      <Filter>Header Files\engine</Filter>
     </ClInclude>
-    <ClInclude Include="include\renderer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="engine\include\renderer.h">
+      <Filter>Header Files\engine</Filter>
     </ClInclude>
-    <ClInclude Include="include\camera.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="engine\include\uriel.h">
+      <Filter>Header Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

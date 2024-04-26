@@ -1,6 +1,3 @@
 Uriel.vcxproj.user
-SDL2.dll
-SDL2_image.dll
-/SDL
+/build
 /.vs
-/x64
