@@ -22,12 +22,18 @@
     <ClCompile Include="engine\src\camera.cpp" />
     <ClCompile Include="engine\src\renderer.cpp" />
     <ClCompile Include="engine\src\uriel.cpp" />
+    <ClCompile Include="game\src\game.cpp" />
     <ClCompile Include="game\src\main.cpp" />
+    <ClCompile Include="game\src\tile.cpp" />
+    <ClCompile Include="game\src\world.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\include\camera.h" />
     <ClInclude Include="engine\include\renderer.h" />
     <ClInclude Include="engine\include\uriel.h" />
+    <ClInclude Include="game\include\game.h" />
+    <ClInclude Include="game\include\tile.h" />
+    <ClInclude Include="game\include\world.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

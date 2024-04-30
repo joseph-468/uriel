@@ -1,5 +1,4 @@
 #include "../include/renderer.h"
-#include <iostream>
 #include "../include/camera.h"
 
 #include <SDL_image.h>

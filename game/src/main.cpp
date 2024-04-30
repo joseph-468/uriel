@@ -1,20 +1,10 @@
 #include <uriel.h>
-
-#include <array>
 #include <iostream>
 
+#include "../include/tile.h"
+#include "../include/world.h"
+
 using namespace Uriel;
-
-class Tile {
-public:
-	Tile() : id(0) {}
-	Tile(const Uint64 id) : id(id) {}
-
-	Uint64 id;
-};
-
-constexpr const int mapWidth = 64;
-constexpr const int mapHeight = 32;
 
 int main(int argc, char *argv[]) {
 	init(1280, 720, "Uriel Test");
@@ -22,34 +12,19 @@ int main(int argc, char *argv[]) {
 	Camera camera(0, 0, 1280, 720);
 	setActiveCamera(camera);
 
-	std::array<Tile, mapWidth * mapHeight> map;
-	for (int y = 20; y < mapHeight; y++) {
-		for (int x = 0; x < mapWidth; x++) {
-			map[y * mapWidth + x].id = 1;
-		}
-	}
-	for (int y = 21; y < mapHeight; y++) {
-		for (int x = 0; x < mapWidth; x++) {
-			map[y * mapWidth + x].id = 2;
-		}
-	}
-	for (int y = 24; y < mapHeight; y++) {
-		for (int x = 0; x < mapWidth; x++) {
-			map[y * mapWidth + x].id = 3;
-		}
-	}
+	World currentWorld = loadWorldFromFile("assets/test.map");
 
 	SpriteSheet characters("assets/characters.png");
 	SpriteSheet backgrounds("assets/backgrounds.png");
 	SpriteSheet tiles("assets/tiles.png");
 
-	Sprite player(characters, { 0, 0, 12, 24 });
-	Sprite hillsBackground(backgrounds, { 0, 0, 1280, 720 });
+	Sprite playerSprite(characters, { 0, 0, 12, 24 });
+	Sprite hillsBackground(backgrounds, { 0, 0, 192, 108});
 
 	Sprite air(tiles, { 0, 0, 8, 8});
-	Sprite grass(tiles, { 0, 8, 8, 8});
-	Sprite dirt(tiles, { 8, 8, 8, 8});
 	Sprite cobble(tiles, { 8, 0, 8, 8});
+	Sprite dirt(tiles, { 0, 8, 8, 8});
+	Sprite grass(tiles, { 8, 8, 8, 8});
 
 	bool controllingCamera = false;
 	float walking = 0;
@@ -58,10 +33,11 @@ int main(int argc, char *argv[]) {
 	Mix_Chunk *walkingSounds = Mix_LoadWAV("assets/walking.wav");
 	int walkingChannel = -1;
 
-	float playerX = 0;
-	float playerY = 0;
+	bool collided;
+	SDL_FRect player = { 0, 0, 32, 64 };
 
 	while (tick()) {
+		// Should make event a default member of Uriel
 		SDL_Event event;
 		while (getEvent(event)) {
 			switch (event.type) {
@@ -103,32 +79,36 @@ int main(int argc, char *argv[]) {
 				controllingCamera = true;
 			}
 		}
+		float prevX = player.x;
+		float prevY = player.y;
 		if (controllingCamera) {
-			if (keyIsDown(SDL_SCANCODE_W)) camera.y += 5 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_A)) camera.x -= 5 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_S)) camera.y -= 5 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_D)) camera.x += 5 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_W)) camera.y += 1 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_A)) camera.x -= 1 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_S)) camera.y -= 1 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_D)) camera.x += 1 * deltaTime;
 		}
 		else {
-			if (keyIsDown(SDL_SCANCODE_W)) playerY += deltaTime;
-			if (keyIsDown(SDL_SCANCODE_A)) playerX -= deltaTime;
-			if (keyIsDown(SDL_SCANCODE_S)) playerY -= deltaTime;
-			if (keyIsDown(SDL_SCANCODE_D)) playerX += deltaTime;
+			if (keyIsDown(SDL_SCANCODE_W)) player.y += 0.4 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_A)) player.x -= 0.4 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_S)) player.y -= 0.4 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_D)) player.x += 0.4 * deltaTime;
+		}
+
+		collided = isCollidingWithTile(currentWorld, player, 0.1);
+		if (collided) {
+			player.x = prevX;
+			player.y = prevY;
 		}
 
 		drawSprite(hillsBackground, camera.x, camera.y, camera.width, camera.height);
 
-		for (int y = 0; y < mapHeight; y++) {
-			for (int x = 0; x < mapWidth; x++) {
-				int id = map[y * mapWidth + x].id;
-				if (id == 0) drawSprite(air, (mapWidth / 2 - x) * 32 - 16, (mapHeight / 2 - y) * 32 + 16, 32, 32);
-				if (id == 1) drawSprite(grass, (mapWidth / 2 - x) * 32 - 16, (mapHeight / 2 - y) * 32 + 16, 32, 32);
-				if (id == 2) drawSprite(dirt, (mapWidth / 2 - x) * 32 - 16, (mapHeight / 2 - y) * 32 + 16, 32, 32);
-				if (id == 3) drawSprite(cobble, (mapWidth / 2 - x) * 32 - 16, (mapHeight / 2 - y) * 32 + 16, 32, 32);
+		for (int y = 0; y < currentWorld.height; y++) {
+			for (int x = 0; x < currentWorld.width; x++) {
+				currentWorld.displayTile(x, y);
 			}
 		}
 
-		drawSprite(player, playerX, playerY, 96, 192);
+		drawSprite(playerSprite, player.x, player.y, player.w, player.h);
 	}
 
 	quit();
