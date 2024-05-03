@@ -19,18 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\src\camera.cpp" />
-    <ClCompile Include="engine\src\renderer.cpp" />
-    <ClCompile Include="engine\src\uriel.cpp" />
+    <ClCompile Include="engine\camera.cpp" />
+    <ClCompile Include="engine\input.cpp" />
+    <ClCompile Include="engine\renderer.cpp" />
+    <ClCompile Include="engine\sprite.cpp" />
+    <ClCompile Include="engine\core.cpp" />
     <ClCompile Include="game\src\game.cpp" />
     <ClCompile Include="game\src\main.cpp" />
     <ClCompile Include="game\src\tile.cpp" />
     <ClCompile Include="game\src\world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\include\camera.h" />
-    <ClInclude Include="engine\include\renderer.h" />
-    <ClInclude Include="engine\include\uriel.h" />
+    <ClInclude Include="engine\uriel.h" />
     <ClInclude Include="game\include\game.h" />
     <ClInclude Include="game\include\tile.h" />
     <ClInclude Include="game\include\world.h" />
@@ -88,13 +88,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)engine\include;$(SolutionDir)vendor\SDL2-2.30.2\include;$(SolutionDir)vendor\SDL2_image-2.8.2\include;$(SolutionDir)vendor\SDL2_mixer-2.8.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)engine;$(SolutionDir)vendor\SDL2-2.30.2\include;$(SolutionDir)vendor\SDL2_image-2.8.2\include;$(SolutionDir)vendor\SDL2_mixer-2.8.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)vendor\SDL2-2.30.2\lib\x64;$(SolutionDir)vendor\SDL2_image-2.8.2\lib\x64;$(SolutionDir)vendor\SDL2_mixer-2.8.0\lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)build\debug\</OutDir>
     <IntDir>$(SolutionDir)build\debug\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)engine\include;$(SolutionDir)vendor\SDL2-2.30.2\include;$(SolutionDir)vendor\SDL2_image-2.8.2\include;$(SolutionDir)vendor\SDL2_mixer-2.8.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)engine;$(SolutionDir)vendor\SDL2-2.30.2\include;$(SolutionDir)vendor\SDL2_image-2.8.2\include;$(SolutionDir)vendor\SDL2_mixer-2.8.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)vendor\SDL2-2.30.2\lib\x64;$(SolutionDir)vendor\SDL2_image-2.8.2\lib\x64;$(SolutionDir)vendor\SDL2_mixer-2.8.0\lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)build\release\</OutDir>
     <IntDir>$(SolutionDir)build\release\intermediate\</IntDir>

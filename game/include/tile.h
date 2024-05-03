@@ -16,9 +16,10 @@ enum TileType {
 class Tile {
 public:
 	Tile();
-	Tile(const Uint64 typeID);
+	Tile(const Uint64 typeId, const Uint64 spriteId);
 
-	Uint64 typeID;
+	Uint64 typeId;
+	Uint64 spriteId; // ID 0 is reserved for no texture
 };
 
 bool isCollidingWithTile(const World &world, SDL_FRect target, float collisionTolerance);

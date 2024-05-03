@@ -4,9 +4,9 @@
 #include "../include/tile.h"
 #include "../include/world.h"
 
-Tile::Tile() : typeID(0) {}
+Tile::Tile() : typeId(0), spriteId(0) {}
 
-Tile::Tile(const Uint64 textureID) : typeID(textureID) {}
+Tile::Tile(const Uint64 typeId, const Uint64 spriteId) : typeId(typeId), spriteId(spriteId) {}
 
 bool isCollidingWithTile(const World &world, SDL_FRect target, float collisionTolerance) {
 	Sint64 top = floor(world.height / 2 - (target.y + ((target.h - collisionTolerance) / 2)) / 32);
@@ -26,7 +26,7 @@ bool isCollidingWithTile(const World &world, SDL_FRect target, float collisionTo
 
 	for (Sint64 y = top; y <= bottom; y++) {
 		for (Sint64 x = left; x <= right; x++) {
-			if (world.tiles[y * world.width + x].typeID != 0) {
+			if (world.tiles[y * world.width + x].typeId != 0) {
 				return true;
 			}
 		}
