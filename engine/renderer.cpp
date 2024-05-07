@@ -1,4 +1,5 @@
 #include "uriel.h"
+#include "internal.h"
 
 #include <SDL_image.h>
 #include <vector>
@@ -11,6 +12,7 @@ namespace Uriel {
 
 	extern std::vector<SpriteSheet> spriteSheets;
 	extern std::vector<Sprite> sprites;
+	extern std::vector<AnimatedSprite> animatedSprites;
 	extern int windowWidth, windowHeight;
 	extern float windowHalfWidth, windowHalfHeight;
 
@@ -57,6 +59,7 @@ namespace Uriel {
 		float halfWidth = width / 2;
 		float halfHeight = height / 2;
 
+		SDL_Rect src = sprites[spriteId - 1].src;
 		SDL_Rect destination;
 		// We use round for the most accurate position.
 		destination.x = static_cast<int>(round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX));
@@ -66,7 +69,36 @@ namespace Uriel {
 		destination.h = static_cast<int>(ceil(height * cameraScaleY));
 
 		if (SDL_HasIntersection(&screenView, &destination)) {
-			SDL_RenderCopyEx(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &sprites[spriteId - 1].src, &destination, NULL, NULL, SDL_FLIP_NONE);
+			SDL_RenderCopyEx(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
+		}
+	}
+
+
+	void drawAnimatedSprite(const Uint64 animatedSpriteId, const float x, const float y, const float width, const float height) {
+		SDL_Rect screenView = { 0, 0, viewport.w, viewport.h };
+		float cameraScaleX = viewport.w / activeCamera->width;
+		float cameraScaleY = viewport.h / activeCamera->height;
+		float halfWidth = width / 2;
+		float halfHeight = height / 2;
+
+		AnimatedSprite &animatedSprite = animatedSprites[animatedSpriteId];
+		SDL_Rect src = animatedSprite.src;
+		Uint64 totalOffset = animatedSprite.currentFrameOffset;
+		if (animatedSprite.playing) {
+			totalOffset += animatedSprite.getCurrentFrame();
+		}
+		src.x += totalOffset % animatedSprite.frameCount * src.w;
+
+		SDL_Rect destination;
+		// We use round for the most accurate position.
+		destination.x = static_cast<int>(round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX));
+		destination.y = static_cast<int>(round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY));
+		// We use ceil as it's better to have overlapping sprites than gaps between them.
+		destination.w = static_cast<int>(ceil(width * cameraScaleX));
+		destination.h = static_cast<int>(ceil(height * cameraScaleY));
+
+		if (SDL_HasIntersection(&screenView, &destination)) {
+			SDL_RenderCopyEx(renderer, spriteSheets[animatedSprites[animatedSpriteId].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
 		}
 	}
 }

@@ -19,8 +19,8 @@ public:
 	std::vector<Tile> tiles;
 
 private:
-	float horizontalOffset;
-	float verticalOffset;
+	Sint64 horizontalOffset;
+	Sint64 verticalOffset;
 };
 
 World loadWorldFromFile(const std::string &filepath);

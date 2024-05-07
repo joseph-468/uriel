@@ -1,5 +1,6 @@
 #include <uriel.h>
 #include <iostream>
+#include <vector>
 
 #include "../include/tile.h"
 #include "../include/world.h"
@@ -21,6 +22,8 @@ int main(int argc, char *argv[]) {
 	createSprite(tilesSheet, { 8, 0, 8, 8});
 	createSprite(tilesSheet, { 0, 8, 8, 8});
 	createSprite(tilesSheet, { 8, 8, 8, 8});
+
+	Uint64 orb = createAnimatedSprite(tilesSheet, { 0, 16, 8, 8 }, 4, 3);
 
 	Uint64 playerSprite = createSprite(charactersSheet, { 0, 0, 12, 24 });
 	Uint64 backgroundSprite = createSprite(backgroundsSheet, { 0, 0, 192, 108 });
@@ -53,6 +56,11 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
+		if (keyIsPressed(SDL_SCANCODE_F1)) playAnimatedSprite(orb);
+		if (keyIsPressed(SDL_SCANCODE_F2)) stopAnimatedSprite(orb);
+		if (keyIsPressed(SDL_SCANCODE_F3)) resumeAnimatedSprite(orb);
+		if (keyIsPressed(SDL_SCANCODE_F4)) pauseAnimatedSprite(orb);
+
 		float prevX = player.x;
 		float prevY = player.y;
 		if (controllingCamera) {
@@ -84,6 +92,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		drawSprite(playerSprite, player.x, player.y, player.w, player.h);
+		drawAnimatedSprite(orb, player.x, player.y + 64, 32, 32);
 	}
 
 	quit();

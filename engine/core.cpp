@@ -8,6 +8,7 @@ namespace Uriel {
 	extern constexpr const SDL_Event NULL_EVENT = { .type = 0 };
 
 	bool running = false;
+	float initTime = 0;
 	float deltaTime = 0;
 	SDL_Window *window = nullptr;
 	int windowWidth, windowHeight;
@@ -22,6 +23,10 @@ namespace Uriel {
 	extern std::array<Uint8, SDL_NUM_SCANCODES> previousKeyboardState;
 
 	void resizeViewport();
+
+	float getCurrentTime() {
+		return static_cast<float>((SDL_GetPerformanceCounter() - initTime)) * 1000 / SDL_GetPerformanceFrequency();
+	}
 
 	void updateWindowSize(int width, int height) {
 		windowWidth = width;
@@ -48,6 +53,8 @@ namespace Uriel {
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 		running = true;
+
+		initTime = SDL_GetPerformanceCounter();
 	}
 
 	void init(const int width, const int height) {

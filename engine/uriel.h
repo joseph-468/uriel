@@ -67,6 +67,12 @@ namespace Uriel {
 	bool getEvent();
 
 	/// <summary>
+	/// Gets the number of seconds since Uriel::init() was called. This doesn't include the time taken to initialize the engine as it's computed at the end of the function.
+	/// </summary>
+	/// <returns>The time in milliseconds.</returns>
+	float getCurrentTime();
+
+	/// <summary>
 	/// Checks whether a key is currently held down. 
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
@@ -98,12 +104,23 @@ namespace Uriel {
 	/// Draws a sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
 	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
 	/// </summary>
-	/// <param name="sprite">A reference to the sprite that will be drawn.</param>
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
 	/// <param name="x">The x position of the sprite in game units.</param>
 	/// <param name="y">The y position of the sprite in game units.</param>
 	/// <param name="width">The width of the sprite in game units.</param>
 	/// <param name="height">The height of the sprite in game units.</param>
 	void drawSprite(const Uint64 spriteId, const float x, const float y, const float width, const float height);
+
+	/// <summary>
+	/// Draws the current frame of the animated sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// The animated sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
+	/// </summary>
+	/// <param name="animatedSprite">The id of the animated sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in game units.</param>
+	/// <param name="y">The y position of the sprite in game units.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	void drawAnimatedSprite(const Uint64 animatedSpriteId, const float x, const float y, const float width, const float height);
 
 	/// <summary>
 	/// Basic camera class used for rending.
@@ -162,81 +179,11 @@ namespace Uriel {
 	void setActiveCamera(Camera &camera);
 
 	/// <summary>
-	/// Basically a wrapper for SDL_Texture that the Sprite class can be linked to.
-	/// </summary>
-	class SpriteSheet {
-	public:
-		/// <summary>
-		/// Basic constructor for spritesheet. Should probably not be accessible to the user.
-		/// </summary>
-		/// <param name="filepath">Path to the spritesheet's source image.</param>
-		SpriteSheet(const std::string &filepath);
-
-		/// <summary>
-		/// An auto incrementing id. Should probably be made private.
-		/// </summary>
-		static Uint64 idCounter;
-
-		/// <summary>
-		/// The unique id of the sprite sheet.
-		/// </summary>
-		const Uint64 id;
-
-		/// <summary>
-		/// The width of the sprite sheet in pixels.
-		/// </summary>
-		int width;
-
-		/// <summary>
-		/// The height of the sprite sheet in pixels.
-		/// </summary>
-		int height;
-
-		/// <summary>
-		/// The sprite sheet's texture. Used internally in rendering code but should probably be private.
-		/// </summary>
-		SDL_Texture *texture;
-	};
-
-	/// <summary>
 	/// Creates a sprite sheet and pushes it to the internal array.
 	/// </summary>
 	/// <param name="filepath">The path to the sprite sheet's source image.</param>
 	/// <returns>The id of the sprite sheet</returns>
 	Uint64 createSpriteSheet(const std::string &filepath);
-
-	/// <summary>
-	/// A sprite defined as a width, height, x, and y within a spritesheet.
-	/// </summary>
-	class Sprite {
-	public:
-		/// <summary>
-		/// Basic constructor. Should probably not be accessible to the user.
-		/// </summary>
-		/// <param name="spriteSheetId">The id of the spritesheet that contains the sprite's texture.</param>
-		/// <param name="src">The top left originating rectangle that defines the texture.</param>
-		Sprite(const Uint64 spriteSheetId, const SDL_Rect src);
-
-		/// <summary>
-		/// An auto incrementing id. Should probably be made private.
-		/// </summary>
-		static Uint64 idCounter;
-
-		/// <summary>
-		/// The unique id of the sprite.
-		/// </summary>
-		const Uint64 id;
-
-		/// <summary>
-		/// The id of the sprite sheet that contains the sprite's texture.
-		/// </summary>
-		const Uint64 spriteSheetId;
-
-		/// <summary>
-		/// The top left originating bounds of the sprite within the spritesheet. 
-		/// </summary>
-		const SDL_Rect src;
-	};
 
 	/// <summary>
 	/// Creates a sprite and pushes it to the internal array.
@@ -245,4 +192,40 @@ namespace Uriel {
 	/// <param name="src">The top left originating bounds of the sprite within the spritesheet.</param>
 	/// <returns>The id of the sprite.</returns>
 	Uint64 createSprite(const Uint64 spriteSheetId, const SDL_Rect src);
+
+	/// <summary>
+	/// Creates an animated sprite and pushes it to the internal array.
+	/// </summary>
+	/// <param name="spriteSheetId">The id of the sprite sheet which contain's the animated sprite's texture.</param>
+	/// <param name="src">The top left originating bounds of the sprite's first frame within the spritesheet.</param>
+	/// <param name="frameCount">The total number of frames in the animation.</param>
+	/// <param name="frameRate">How many frames are played per second.</param>
+	/// <returns>The id of the animated sprite.</returns>
+	Uint64 createAnimatedSprite(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate);
+
+	/// <summary>
+	/// Plays an animated sprite's animation from the first frame.
+	/// </summary>
+	/// <param name="id">The id of the animated sprite.</param>
+	/// <param name="loop">Whether the animation will loop after finishing once.</param>
+	void playAnimatedSprite(const Uint64 id, bool loop= true);
+
+	/// <summary>
+	/// Stops an animated sprite's animation from playing and resets it to the first frame. 
+	/// </summary>
+	/// <param name="id">The id of the animated sprite.</param>
+	void stopAnimatedSprite(const Uint64 id);
+
+	/// <summary>
+	/// Plays an animated sprite's animation from the current frame.
+	/// </summary>
+	/// <param name="id">The id of the animated sprite.</param>
+	/// <param name="loop">Whether the animation will loop after finishing once.</param>
+	void resumeAnimatedSprite(const Uint64 id, bool loop = true);
+
+	/// <summary>
+	/// Stops an animated sprite's animation from playing but maintains it's current frame. 
+	/// </summary>
+	/// <param name="id">The id of the animated sprite.</param>
+	void pauseAnimatedSprite(const Uint64 id);
 }

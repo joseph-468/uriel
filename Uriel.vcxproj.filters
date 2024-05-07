@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\camera.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
     <ClCompile Include="engine\renderer.cpp">
       <Filter>engine</Filter>
     </ClCompile>
@@ -55,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="game\include\world.h">
       <Filter>game\include</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\internal.h">
+      <Filter>engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

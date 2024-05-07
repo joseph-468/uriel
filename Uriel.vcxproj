@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\camera.cpp" />
     <ClCompile Include="engine\input.cpp" />
     <ClCompile Include="engine\renderer.cpp" />
     <ClCompile Include="engine\sprite.cpp" />
@@ -30,6 +29,7 @@
     <ClCompile Include="game\src\world.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\internal.h" />
     <ClInclude Include="engine\uriel.h" />
     <ClInclude Include="game\include\game.h" />
     <ClInclude Include="game\include\tile.h" />
