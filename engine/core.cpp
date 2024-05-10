@@ -8,7 +8,7 @@ namespace Uriel {
 	extern constexpr const SDL_Event NULL_EVENT = { .type = 0 };
 
 	bool running = false;
-	float initTime = 0;
+	Uint64 initTime = 0;
 	float deltaTime = 0;
 	SDL_Window *window = nullptr;
 	int windowWidth, windowHeight;
@@ -25,7 +25,7 @@ namespace Uriel {
 	void resizeViewport();
 
 	float getCurrentTime() {
-		return static_cast<float>((SDL_GetPerformanceCounter() - initTime)) * 1000 / SDL_GetPerformanceFrequency();
+		return static_cast<double>((SDL_GetPerformanceCounter() - initTime)) * 1000 / SDL_GetPerformanceFrequency();
 	}
 
 	void updateWindowSize(int width, int height) {
@@ -35,8 +35,27 @@ namespace Uriel {
 		windowHalfHeight= static_cast<float>(height) / 2;
 	}
 
+	Uint64 getFPS() {
+		static float startTime = getCurrentTime();
+		static float currentTime = 0;
+		static int mostRecentUpdate = 0;
+		static int frames = 0;
+		static int fps = 0;
+
+		frames++;
+		currentTime = getCurrentTime();
+		if ((currentTime - startTime) / 500 > mostRecentUpdate) {
+			fps = frames * 2;
+			frames = 0;
+			mostRecentUpdate++;
+		}
+
+		return fps;
+	}
+
 	void init(const int width, const int height, const char *title) {
 		SDL_Init(SDL_INIT_EVERYTHING);
+		TTF_Init();
 		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
 		SDL_DisplayMode dm;

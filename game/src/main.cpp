@@ -1,11 +1,20 @@
 #include <uriel.h>
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <SDL_ttf.h>
 
+#include "../include/game.h"
 #include "../include/tile.h"
 #include "../include/world.h"
 
 using namespace Uriel;
+
+void displayFPS() {
+	std::string text = std::to_string(getFPS());
+	text.append(" FPS");
+	renderText(text.c_str());
+}
 
 int main(int argc, char *argv[]) {
 	init(1280, 720, "Uriel Test");
@@ -14,6 +23,7 @@ int main(int argc, char *argv[]) {
 	setActiveCamera(camera);
 
 	World currentWorld = loadWorldFromFile("assets/test.map");
+	//World currentWorld = generateWorld();
 
 	Uint64 charactersSheet = createSpriteSheet("assets/characters.png");
 	Uint64 backgroundsSheet = createSpriteSheet("assets/backgrounds.png");
@@ -29,8 +39,7 @@ int main(int argc, char *argv[]) {
 	Uint64 backgroundSprite = createSprite(backgroundsSheet, { 0, 0, 192, 108 });
 
 	bool controllingCamera = false;
-	bool collided;
-	SDL_FRect player = { 0, 0, 32, 64 };
+	SDL_FRect player = { 0, 0, 32, 64};
 
 	while (tick()) {
 		// Input
@@ -38,7 +47,7 @@ int main(int argc, char *argv[]) {
 			switch (event.type) {
 				case SDL_MOUSEWHEEL: {
 					if (!controllingCamera) break;
-					float distance = event.wheel.y * deltaTime * -250;
+					float distance = event.wheel.y * -10;
 					float widthRatio = camera.width / camera.height;
 					camera.width += distance * widthRatio;
 					camera.height += distance;
@@ -61,8 +70,9 @@ int main(int argc, char *argv[]) {
 		if (keyIsPressed(SDL_SCANCODE_F3)) resumeAnimatedSprite(orb);
 		if (keyIsPressed(SDL_SCANCODE_F4)) pauseAnimatedSprite(orb);
 
-		float prevX = player.x;
-		float prevY = player.y;
+		float xVel = 0;
+		float yVel = 0;
+
 		if (controllingCamera) {
 			if (keyIsDown(SDL_SCANCODE_W)) camera.y += 1 * deltaTime;
 			if (keyIsDown(SDL_SCANCODE_A)) camera.x -= 1 * deltaTime;
@@ -70,29 +80,28 @@ int main(int argc, char *argv[]) {
 			if (keyIsDown(SDL_SCANCODE_D)) camera.x += 1 * deltaTime;
 		}
 		else {
-			if (keyIsDown(SDL_SCANCODE_W)) player.y += 0.4 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_A)) player.x -= 0.4 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_S)) player.y -= 0.4 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_D)) player.x += 0.4 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_W)) yVel = 0.2 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_A)) xVel = -0.2 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_S)) yVel = -0.2 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_D)) xVel = 0.2 * deltaTime;
 		}
 
-		collided = isCollidingWithTile(currentWorld, player, 0.1);
-		if (collided) {
-			player.x = prevX;
-			player.y = prevY;
+		moveAndResolveCollision(currentWorld, player, xVel, yVel);
+
+		if (!controllingCamera) {
+			camera.x = player.x;
+			camera.y = player.y;
 		}
 
 		// Rendering 
 		drawSprite(backgroundSprite, camera.x, camera.y, camera.width, camera.height);
 
-		for (int y = 0; y < currentWorld.height; y++) {
-			for (int x = 0; x < currentWorld.width; x++) {
-				currentWorld.displayTile(x, y);
-			}
-		}
+		currentWorld.displayTiles(camera);
 
 		drawSprite(playerSprite, player.x, player.y, player.w, player.h);
 		drawAnimatedSprite(orb, player.x, player.y + 64, 32, 32);
+
+		displayFPS();
 	}
 
 	quit();

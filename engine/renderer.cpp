@@ -61,16 +61,15 @@ namespace Uriel {
 
 		SDL_Rect src = sprites[spriteId - 1].src;
 		SDL_Rect destination;
-		// We use round for the most accurate position.
+		// Round is more accurate but if extra performance is needed floor should be used.
 		destination.x = static_cast<int>(round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX));
 		destination.y = static_cast<int>(round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY));
 		// We use ceil as it's better to have overlapping sprites than gaps between them.
 		destination.w = static_cast<int>(ceil(width * cameraScaleX));
 		destination.h = static_cast<int>(ceil(height * cameraScaleY));
 
-		if (SDL_HasIntersection(&screenView, &destination)) {
-			SDL_RenderCopyEx(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
-		}
+		//if (SDL_HasIntersection(&screenView, &destination))
+		SDL_RenderCopyEx(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
 	}
 
 
@@ -90,15 +89,27 @@ namespace Uriel {
 		src.x += totalOffset % animatedSprite.frameCount * src.w;
 
 		SDL_Rect destination;
-		// We use round for the most accurate position.
+		// Round is more accurate but if extra performance is needed floor should be used.
 		destination.x = static_cast<int>(round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX));
 		destination.y = static_cast<int>(round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY));
 		// We use ceil as it's better to have overlapping sprites than gaps between them.
 		destination.w = static_cast<int>(ceil(width * cameraScaleX));
 		destination.h = static_cast<int>(ceil(height * cameraScaleY));
 
-		if (SDL_HasIntersection(&screenView, &destination)) {
-			SDL_RenderCopyEx(renderer, spriteSheets[animatedSprites[animatedSpriteId].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
-		}
+		//if (SDL_HasIntersection(&screenView, &destination))
+		SDL_RenderCopyEx(renderer, spriteSheets[animatedSprites[animatedSpriteId].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
+	}
+
+	// Temporary
+	void renderText(const char *text) {
+		static TTF_Font* font = TTF_OpenFont("assets/bittypix.ttf", 24);
+		static SDL_Color fontColor = { 0, 0, 0 };
+		SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, fontColor);
+		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+		SDL_Rect src = { 0, 0, 0, 0 };
+		SDL_QueryTexture(textTexture, NULL, NULL, &src.w, &src.h);
+		SDL_RenderCopy(renderer, textTexture, &src, &src);
+		SDL_FreeSurface(textSurface);
+		SDL_DestroyTexture(textTexture);
 	}
 }

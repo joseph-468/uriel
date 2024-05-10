@@ -3,9 +3,16 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include <string>
 
 namespace Uriel {
+	/// <summary>
+	/// Temporary.
+	/// </summary>
+	/// <param name="text"></param>
+	void renderText(const char *text);
+
 	/// <summary>
 	/// Delta time in milliseconds.
 	/// This is calculated within the tick function.
@@ -71,6 +78,12 @@ namespace Uriel {
 	/// </summary>
 	/// <returns>The time in milliseconds.</returns>
 	float getCurrentTime();
+
+	/// <summary>
+	/// Gets the current FPS. This is updated every 500ms.
+	/// </summary>
+	/// <returns>The current FPS.</returns>
+	Uint64 getFPS();
 
 	/// <summary>
 	/// Checks whether a key is currently held down. 
