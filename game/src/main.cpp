@@ -1,8 +1,6 @@
 #include <uriel.h>
 #include <iostream>
 #include <vector>
-#include <chrono>
-#include <SDL_ttf.h>
 
 #include "../include/game.h"
 #include "../include/tile.h"

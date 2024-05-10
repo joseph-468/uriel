@@ -25,7 +25,7 @@ namespace Uriel {
 	void resizeViewport();
 
 	float getCurrentTime() {
-		return static_cast<double>((SDL_GetPerformanceCounter() - initTime)) * 1000 / SDL_GetPerformanceFrequency();
+		return static_cast<float>((SDL_GetPerformanceCounter() - initTime)) * 1000 / SDL_GetPerformanceFrequency();
 	}
 
 	void updateWindowSize(int width, int height) {
