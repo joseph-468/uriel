@@ -1,6 +1,7 @@
 #include <uriel.h>
 #include <algorithm>
 
+#include "../include/game.h"
 #include "../include/tile.h"
 #include "../include/world.h"
 
@@ -9,10 +10,10 @@ Tile::Tile() : typeId(0), spriteId(0) {}
 Tile::Tile(const Uint64 typeId, const Uint64 spriteId) : typeId(typeId), spriteId(spriteId) {}
 
 bool isCollidingWithTile(const World &world, SDL_FRect target, float collisionTolerance) {
-	Sint64 top = static_cast<Sint64>(floor(world.height / 2 - (target.y + ((target.h - collisionTolerance) / 2)) / 32));
-	Sint64 bottom = static_cast<Sint64>(floor(world.height / 2 - (target.y - ((target.h - collisionTolerance) / 2)) / 32));
-	Sint64 left = static_cast<Sint64>(floor(world.width / 2 + (target.x - ((target.w - collisionTolerance) / 2)) / 32));
-	Sint64 right = static_cast<Sint64>(floor(world.width / 2 + (target.x + ((target.w - collisionTolerance) / 2)) / 32));
+	Sint64 top = static_cast<Sint64>(floor(world.height / 2 - (target.y + ((target.h - collisionTolerance) / 2)) / TILE_SIZE));
+	Sint64 bottom = static_cast<Sint64>(floor(world.height / 2 - (target.y - ((target.h - collisionTolerance) / 2)) / TILE_SIZE));
+	Sint64 left = static_cast<Sint64>(floor(world.width / 2 + (target.x - ((target.w - collisionTolerance) / 2)) / TILE_SIZE));
+	Sint64 right = static_cast<Sint64>(floor(world.width / 2 + (target.x + ((target.w - collisionTolerance) / 2)) / TILE_SIZE));
 
 	if (top < 0 && bottom < 0) return false;
 	if (left < 0 && right < 0) return false;

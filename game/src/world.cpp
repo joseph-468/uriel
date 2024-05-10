@@ -21,14 +21,14 @@ void World::displayTile(const Uint64 x, const Uint64 y) {
 
 	Sint64 xPos = horizontalOffset + x * TILE_SIZE;
 	Sint64 yPos = verticalOffset - y * TILE_SIZE;
-	drawSprite(tile.spriteId, xPos, yPos, TILE_SIZE, TILE_SIZE);
+	drawSprite(tile.spriteId, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
 }
 
 void World::displayTiles(const Camera &camera) {
-	Sint64 top = static_cast<Sint64>(floor(height / 2 - (camera.y + (camera.height / 2)) / 32));
-	Sint64 bottom = static_cast<Sint64>(floor(height / 2 - (camera.y - (camera.height / 2)) / 32));
-	Sint64 left = static_cast<Sint64>(floor(width / 2 + (camera.x - (camera.width / 2)) / 32));
-	Sint64 right = static_cast<Sint64>(floor(width / 2 + (camera.x + (camera.width / 2)) / 32));
+	Sint64 top = static_cast<Sint64>(floor(height / 2 - (camera.y + (camera.height / 2)) / TILE_SIZE));
+	Sint64 bottom = static_cast<Sint64>(floor(height / 2 - (camera.y - (camera.height / 2)) / TILE_SIZE));
+	Sint64 left = static_cast<Sint64>(floor(width / 2 + (camera.x - (camera.width / 2)) / TILE_SIZE));
+	Sint64 right = static_cast<Sint64>(floor(width / 2 + (camera.x + (camera.width / 2)) / TILE_SIZE));
 
 	top = std::clamp(top, static_cast<Sint64>(0), height - 1);
 	bottom  = std::clamp(bottom, static_cast<Sint64>(0), height - 1);
@@ -36,8 +36,8 @@ void World::displayTiles(const Camera &camera) {
 	right = std::clamp(right, static_cast<Sint64>(0), width - 1);
 
 	if (top == bottom || left == right) return;
-	for (int y = top; y <= bottom; y++) {
-		for (int x = left; x <= right; x++) {
+	for (Sint64 y = top; y <= bottom; y++) {
+		for (Sint64 x = left; x <= right; x++) {
 			displayTile(x, y);
 		}
 	}

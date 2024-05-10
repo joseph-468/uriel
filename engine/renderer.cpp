@@ -86,7 +86,7 @@ namespace Uriel {
 		if (animatedSprite.playing) {
 			totalOffset += animatedSprite.getCurrentFrame();
 		}
-		src.x += totalOffset % animatedSprite.frameCount * src.w;
+		src.x += static_cast<int>(totalOffset % animatedSprite.frameCount * src.w);
 
 		SDL_Rect destination;
 		// Round is more accurate but if extra performance is needed floor should be used.
