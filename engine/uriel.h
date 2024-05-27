@@ -196,7 +196,9 @@ namespace Uriel {
 	/// </summary>
 	/// <param name="filepath">The path to the sprite sheet's source image.</param>
 	/// <returns>The id of the sprite sheet</returns>
-	Uint64 createSpriteSheet(const std::string &filepath);
+	Uint64 createSpriteSheet(const std::string &id, const std::string &filepath);
+
+	Uint64 getSpriteSheetIndex(const std::string &name);
 
 	/// <summary>
 	/// Creates a sprite and pushes it to the internal array.
@@ -204,7 +206,8 @@ namespace Uriel {
 	/// <param name="spriteSheetId">The id of the sprite sheet which contains' the sprite's texture.</param>
 	/// <param name="src">The top left originating bounds of the sprite within the spritesheet.</param>
 	/// <returns>The id of the sprite.</returns>
-	Uint64 createSprite(const Uint64 spriteSheetId, const SDL_Rect src);
+	Uint64 createSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src);
+	Uint64 getSpriteIndex(const std::string &name);
 
 	/// <summary>
 	/// Creates an animated sprite and pushes it to the internal array.
@@ -214,7 +217,8 @@ namespace Uriel {
 	/// <param name="frameCount">The total number of frames in the animation.</param>
 	/// <param name="frameRate">How many frames are played per second.</param>
 	/// <returns>The id of the animated sprite.</returns>
-	Uint64 createAnimatedSprite(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate);
+	Uint64 createAnimatedSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate);
+	Uint64 getAnimatedSpriteIndex(const std::string &name);
 
 	/// <summary>
 	/// Plays an animated sprite's animation from the first frame.

@@ -1,0 +1,16 @@
+define Tile {
+	id,
+	w = "1",
+	h = "1",
+	collidable = "true",
+	animated = "false",
+}
+
+<Tile id="Wood">
+<Tile id="Cobblestone">
+<Tile id="Grass">
+<Tile id="Dirt">
+<Tile id="DoorClosed" w="1" h="3">
+<Tile id="DoorOpenedRight" w="2" h="3">
+<Tile id="DoorOpenedLeft" w="2" h="3">
+<Tile id="Orb" animated="true">

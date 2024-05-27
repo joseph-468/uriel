@@ -23,6 +23,7 @@
     <ClCompile Include="engine\renderer.cpp" />
     <ClCompile Include="engine\sprite.cpp" />
     <ClCompile Include="engine\core.cpp" />
+    <ClCompile Include="game\src\external_data.cpp" />
     <ClCompile Include="game\src\game.cpp" />
     <ClCompile Include="game\src\main.cpp" />
     <ClCompile Include="game\src\tile.cpp" />
@@ -31,6 +32,7 @@
   <ItemGroup>
     <ClInclude Include="engine\internal.h" />
     <ClInclude Include="engine\uriel.h" />
+    <ClInclude Include="game\include\external_data.h" />
     <ClInclude Include="game\include\game.h" />
     <ClInclude Include="game\include\tile.h" />
     <ClInclude Include="game\include\world.h" />
@@ -143,7 +145,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)intermediate\$(TargetName).pdb</ProgramDatabaseFile>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

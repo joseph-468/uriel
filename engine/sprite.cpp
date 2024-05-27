@@ -1,15 +1,20 @@
 #include "uriel.h"
 #include "internal.h"
 
-#include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <SDL_image.h>
 
 namespace Uriel {
 	extern SDL_Renderer *renderer;
 	std::vector<SpriteSheet> spriteSheets;
+	std::unordered_map<std::string, Uint64> spriteSheetsMap;
+
 	std::vector<Sprite> sprites;
+	std::unordered_map<std::string, Uint64> spritesMap;
+
 	std::vector<AnimatedSprite> animatedSprites;
+	std::unordered_map<std::string, Uint64> animatedSpritesMap;
 
 	Uint64 SpriteSheet::idCounter = 0;
 	Uint64 Sprite::idCounter = 0;
@@ -24,9 +29,14 @@ namespace Uriel {
 		return SpriteSheet(filepath);
 	}
 
-	Uint64 createSpriteSheet(const std::string &filepath) {
+	Uint64 createSpriteSheet(const std::string &id, const std::string &filepath) {
 		spriteSheets.push_back(SpriteSheet::createInstance(filepath));
+		spriteSheetsMap.insert(std::make_pair(id, spriteSheets.size() - 1));
 		return spriteSheets.size() - 1;
+	}
+
+	Uint64 getSpriteSheetIndex(const std::string &name) {
+		return spriteSheetsMap[name];
 	}
 
 	Sprite::Sprite(const Uint64 spriteSheetId, const SDL_Rect src) : id(idCounter++), spriteSheetId(spriteSheetId), src(src) {}
@@ -35,9 +45,14 @@ namespace Uriel {
 		return Sprite(spriteSheetId, src);
 	}
 
-	Uint64 createSprite(const Uint64 spriteSheetId, const SDL_Rect src) {
+	Uint64 createSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src) {
 		sprites.push_back(Sprite::createInstance(spriteSheetId, src));
+		spritesMap.insert(std::make_pair(name, sprites.size()));
 		return sprites.size();
+	}
+
+	Uint64 getSpriteIndex(const std::string &name) {
+		return spritesMap[name];
 	}
 
 	AnimatedSprite::AnimatedSprite(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate)
@@ -47,9 +62,14 @@ namespace Uriel {
 		return AnimatedSprite(spriteSheetId, src, frameCount, frameRate);
 	}
 
-	Uint64 createAnimatedSprite(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate) {
+	Uint64 createAnimatedSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate) {
 		animatedSprites.push_back(AnimatedSprite::createInstance(spriteSheetId, src, frameCount, frameRate));
+		animatedSpritesMap.insert(std::make_pair(name, animatedSprites.size() - 1));
 		return animatedSprites.size() - 1;
+	}
+
+	Uint64 getAnimatedSpriteIndex(const std::string &name) {
+		return animatedSpritesMap[name];
 	}
 
 	Uint64 AnimatedSprite::getCurrentFrame() {

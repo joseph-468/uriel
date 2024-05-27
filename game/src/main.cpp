@@ -5,6 +5,7 @@
 #include "../include/game.h"
 #include "../include/tile.h"
 #include "../include/world.h"
+#include "../include/external_data.h"
 
 using namespace Uriel;
 
@@ -20,24 +21,49 @@ int main(int argc, char *argv[]) {
 	Camera camera(0, 0, 1280, 720);
 	setActiveCamera(camera);
 
-	World currentWorld = loadWorldFromFile("assets/test.map");
-	//World currentWorld = generateWorld();
+	// Load sprite sheets 
+	auto spriteSheetsResult = getTags("assets/data/sprite_sheets.dat");
+	if (!spriteSheetsResult) return 1;
+	std::vector<Tag> spriteSheetTags = spriteSheetsResult.value();
+	for (auto &tag : spriteSheetTags) {
+		createSpriteSheet(tag.getValue("id"), tag.getValue("filepath"));
+	}
 
-	Uint64 charactersSheet = createSpriteSheet("assets/characters.png");
-	Uint64 backgroundsSheet = createSpriteSheet("assets/backgrounds.png");
-	Uint64 tilesSheet = createSpriteSheet("assets/tiles.png");
+	// Load sprites
+ 	auto spritesResult = getTags("assets/data/sprites.dat");
+	if (!spritesResult) return 1;
+	std::vector<Tag> spriteTags = spritesResult.value();
+	for (auto &tag : spriteTags) {
+		std::string name = tag.getValue("id");
+		Uint64 spriteSheet = getSpriteSheetIndex(tag.getValue("spriteSheet"));
+		int x = std::stoi(tag.getValue("x"));
+		int y = std::stoi(tag.getValue("y"));
+		int w = std::stoi(tag.getValue("w"));
+		int h = std::stoi(tag.getValue("h"));
+		if (tag.getValue("animated") == "false") {
+			createSprite(name, spriteSheet, { x, y, w, h });
+		}
+		else {
+			createAnimatedSprite(name, spriteSheet, { x, y, w, h }, std::stoi(tag.getValue("frames")), std::stoi(tag.getValue("framerate")));
+		}
+	}
 
-	createSprite(tilesSheet, { 8, 0, 8, 8});
-	createSprite(tilesSheet, { 0, 8, 8, 8});
-	createSprite(tilesSheet, { 8, 8, 8, 8});
+	// Load tiles
+	auto tilesResult = getTags("assets/data/tiles.dat");
+	if (!tilesResult) return 1;
+	std::vector<Tag> tileTags = tilesResult.value();
+	for (auto &tag : tileTags) {
+		createTileType(tag.getValue("id"), getSpriteIndex(tag.getValue("id")), std::stoi(tag.getValue("w")), std::stoi(tag.getValue("h")), tag.getValue("animated") == "true");
+	}
 
-	Uint64 orb = createAnimatedSprite(tilesSheet, { 0, 16, 8, 8 }, 4, 3);
-
-	Uint64 playerSprite = createSprite(charactersSheet, { 0, 0, 12, 24 });
-	Uint64 backgroundSprite = createSprite(backgroundsSheet, { 0, 0, 192, 108 });
+	Uint64 orb = getAnimatedSpriteIndex("Orb");
+	Uint64 playerSprite = getSpriteIndex("Player");
+	Uint64 backgroundSprite = getSpriteIndex("Hills");
 
 	bool controllingCamera = false;
 	SDL_FRect player = { 0, 0, 32, 64};
+
+	World currentWorld = generateWorld();
 
 	while (tick()) {
 		// Input

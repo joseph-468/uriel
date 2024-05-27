@@ -39,6 +39,9 @@
     <ClCompile Include="engine\input.cpp">
       <Filter>engine</Filter>
     </ClCompile>
+    <ClCompile Include="game\src\external_data.cpp">
+      <Filter>game\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\uriel.h">
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="engine\internal.h">
       <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="game\include\external_data.h">
+      <Filter>game\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

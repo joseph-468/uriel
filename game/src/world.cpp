@@ -66,9 +66,9 @@ World generateWorld() {
 	for (int y = 0; y < 64; y++) {
 		for (int x = 0; x < 256; x++) {
 			int id = 0;
-			if (y == 33) id = 2;
-			if (y > 33) id = 3;
-			if (y > 39) id = 1;
+			if (y == 33) id = 3;
+			if (y > 33) id = 4;
+			if (y > 39) id = 2;
 			tiles.push_back(Tile(id , id));
 		}
 	}

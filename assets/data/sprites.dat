@@ -1,0 +1,22 @@
+define Sprite {
+	id,
+	x,
+	y,
+	w = "8",
+	h = "8",
+	spriteSheet = "Tiles",
+	frames = "1",
+	framerate = "0",
+	animated = "false",
+}
+
+<Sprite id="Wood" x="0" y="0">
+<Sprite id="Cobblestone" x="8" y="0">
+<Sprite id="Grass" x="0" y="8">
+<Sprite id="Dirt" x="8" y="8">
+<Sprite id="DoorClosed" x="32" y="0" w="8" h="24">
+<Sprite id="DoorOpenedRight" x="16" y="0" w="16" h="24">
+<Sprite id="DoorOpenedLeft" x="16" y="0" w="16" h="24">
+<Sprite id="Orb" x="0" y="32" animated="true" frames="4" framerate="3">
+<Sprite id="Player" x="0" y="0" w="12" h="24" spriteSheet="Entities">
+<Sprite id="Hills" x="0" y="0" w="192" h="108" spriteSheet="Backgrounds">
