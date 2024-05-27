@@ -10,10 +10,10 @@ namespace Uriel {
 	public:
 		static SpriteSheet createInstance(const std::string &filepath);
 
-		static Uint64 idCounter;
-		const Uint64 id;
-		int width;
-		int height;
+		static Uint16 idCounter;
+		const Uint16 id;
+		Sint32 width;
+		Sint32 height;
 		SDL_Texture *texture;
 
 	private:
@@ -22,42 +22,15 @@ namespace Uriel {
 
 	class Sprite {
 	public:
-		static Sprite createInstance(const Uint64 spriteSheetId, const SDL_Rect src);
+		static Sprite createInstance(const Uint16 spriteSheetId, const SDL_Rect src, const Uint16 frameCount);
 
-		static Uint64 idCounter;
-		const Uint64 id;
-		const Uint64 spriteSheetId;
+		static Uint16 idCounter;
 		const SDL_Rect src;
+		const Uint16 id;
+		const Uint16 spriteSheetId;
+		const Uint16 frameCount;
 
 	private:
-		Sprite(const Uint64 spriteSheetId, const SDL_Rect src);
-	};
-
-	enum class AnimationState {
-		PLAYING,
-		PAUSED,
-		STOPPED,
-	};
-
-	class AnimatedSprite {
-	public:
-		static AnimatedSprite createInstance(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate);
-
-		Uint64 getCurrentFrame();
-
-		static Uint64 idCounter;
-		const Uint64 id;
-		const Uint64 spriteSheetId;
-		const SDL_Rect src;
-		const Uint64 frameCount;
-		const float frameRate;
-		AnimationState state;
-		float startTime;
-		Uint64 currentFrameOffset;
-		bool playing;
-		bool looping;
-
-	private:
-		AnimatedSprite(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate);
+		Sprite(const Uint16 spriteSheetId, const SDL_Rect src, const Uint16 frameCount);
 	};
 }

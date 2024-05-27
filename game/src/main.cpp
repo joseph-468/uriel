@@ -7,6 +7,12 @@
 #include "../include/world.h"
 #include "../include/external_data.h"
 
+
+// TODO
+// Reduce id sizes to 16 bit
+// Make sprites just one class
+// Add sprite current animation data to all tiles / entities
+
 using namespace Uriel;
 
 void displayFPS() {
@@ -35,17 +41,14 @@ int main(int argc, char *argv[]) {
 	std::vector<Tag> spriteTags = spritesResult.value();
 	for (auto &tag : spriteTags) {
 		std::string name = tag.getValue("id");
-		Uint64 spriteSheet = getSpriteSheetIndex(tag.getValue("spriteSheet"));
-		int x = std::stoi(tag.getValue("x"));
-		int y = std::stoi(tag.getValue("y"));
-		int w = std::stoi(tag.getValue("w"));
-		int h = std::stoi(tag.getValue("h"));
-		if (tag.getValue("animated") == "false") {
-			createSprite(name, spriteSheet, { x, y, w, h });
-		}
-		else {
-			createAnimatedSprite(name, spriteSheet, { x, y, w, h }, std::stoi(tag.getValue("frames")), std::stoi(tag.getValue("framerate")));
-		}
+		Uint16 spriteSheet = getSpriteSheetIndex(tag.getValue("spriteSheet"));
+		Uint16 frameCount = std::stoi(tag.getValue("frames"));
+		SDL_Rect src;
+		src.x = std::stoi(tag.getValue("x"));
+		src.y = std::stoi(tag.getValue("y"));
+		src.w = std::stoi(tag.getValue("w"));
+		src.h = std::stoi(tag.getValue("h"));
+		createSprite(name, spriteSheet, src, frameCount);
 	}
 
 	// Load tiles
@@ -56,9 +59,10 @@ int main(int argc, char *argv[]) {
 		createTileType(tag.getValue("id"), getSpriteIndex(tag.getValue("id")), std::stoi(tag.getValue("w")), std::stoi(tag.getValue("h")), tag.getValue("animated") == "true");
 	}
 
-	Uint64 orb = getAnimatedSpriteIndex("Orb");
-	Uint64 playerSprite = getSpriteIndex("Player");
-	Uint64 backgroundSprite = getSpriteIndex("Hills");
+	Uint16 orb = getSpriteIndex("Orb");
+	AnimatedSprite animatedOrb(orb, 3);
+	Uint16 playerSprite = getSpriteIndex("Player");
+	Uint16 backgroundSprite = getSpriteIndex("Hills");
 
 	bool controllingCamera = false;
 	SDL_FRect player = { 0, 0, 32, 64};
@@ -89,10 +93,10 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if (keyIsPressed(SDL_SCANCODE_F1)) playAnimatedSprite(orb);
-		if (keyIsPressed(SDL_SCANCODE_F2)) stopAnimatedSprite(orb);
-		if (keyIsPressed(SDL_SCANCODE_F3)) resumeAnimatedSprite(orb);
-		if (keyIsPressed(SDL_SCANCODE_F4)) pauseAnimatedSprite(orb);
+		if (keyIsPressed(SDL_SCANCODE_F1)) animatedOrb.play(true);
+		if (keyIsPressed(SDL_SCANCODE_F2)) animatedOrb.stop();
+		if (keyIsPressed(SDL_SCANCODE_F3)) animatedOrb.resume();
+		if (keyIsPressed(SDL_SCANCODE_F4)) animatedOrb.pause();
 
 		float xVel = 0;
 		float yVel = 0;
@@ -123,7 +127,7 @@ int main(int argc, char *argv[]) {
 		currentWorld.displayTiles(camera);
 
 		drawSprite(playerSprite, player.x, player.y, player.w, player.h);
-		drawAnimatedSprite(orb, player.x, player.y + 64, 32, 32);
+		drawAnimatedSprite(animatedOrb, player.x, player.y + 64, 32, 32);
 
 		displayFPS();
 	}

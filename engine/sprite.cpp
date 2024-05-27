@@ -7,18 +7,14 @@
 
 namespace Uriel {
 	extern SDL_Renderer *renderer;
+
 	std::vector<SpriteSheet> spriteSheets;
-	std::unordered_map<std::string, Uint64> spriteSheetsMap;
-
+	std::unordered_map<std::string, Uint16> spriteSheetsMap;
 	std::vector<Sprite> sprites;
-	std::unordered_map<std::string, Uint64> spritesMap;
+	std::unordered_map<std::string, Uint16> spritesMap;
 
-	std::vector<AnimatedSprite> animatedSprites;
-	std::unordered_map<std::string, Uint64> animatedSpritesMap;
-
-	Uint64 SpriteSheet::idCounter = 0;
-	Uint64 Sprite::idCounter = 0;
-	Uint64 AnimatedSprite::idCounter = 0;
+	Uint16 SpriteSheet::idCounter = 0;
+	Uint16 Sprite::idCounter = 0;
 
 	SpriteSheet::SpriteSheet(const std::string &filepath) : id(idCounter++), width(-1), height(-1) {
 		texture = IMG_LoadTexture(renderer, filepath.c_str());
@@ -29,91 +25,76 @@ namespace Uriel {
 		return SpriteSheet(filepath);
 	}
 
-	Uint64 createSpriteSheet(const std::string &id, const std::string &filepath) {
+	Uint16 createSpriteSheet(const std::string &id, const std::string &filepath) {
 		spriteSheets.push_back(SpriteSheet::createInstance(filepath));
 		spriteSheetsMap.insert(std::make_pair(id, spriteSheets.size() - 1));
 		return spriteSheets.size() - 1;
 	}
 
-	Uint64 getSpriteSheetIndex(const std::string &name) {
+	Uint16 getSpriteSheetIndex(const std::string &name) {
 		return spriteSheetsMap[name];
 	}
 
-	Sprite::Sprite(const Uint64 spriteSheetId, const SDL_Rect src) : id(idCounter++), spriteSheetId(spriteSheetId), src(src) {}
+	Sprite::Sprite(const Uint16 spriteSheetId, const SDL_Rect src, const Uint16 frameCount) : id(idCounter++), spriteSheetId(spriteSheetId), src(src), frameCount(frameCount) {}
 
-	Sprite Sprite::createInstance(const Uint64 spriteSheetId, const SDL_Rect src) {
-		return Sprite(spriteSheetId, src);
+	Sprite Sprite::createInstance(const Uint16 spriteSheetId, const SDL_Rect src, const Uint16 frameCount) {
+		return Sprite(spriteSheetId, src, frameCount);
 	}
 
-	Uint64 createSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src) {
-		sprites.push_back(Sprite::createInstance(spriteSheetId, src));
+	Uint16 createSprite(const std::string &name, const Uint16 spriteSheetId, const SDL_Rect src, const Uint16 frameCount) {
+		sprites.push_back(Sprite::createInstance(spriteSheetId, src, frameCount));
 		spritesMap.insert(std::make_pair(name, sprites.size()));
 		return sprites.size();
 	}
 
-	Uint64 getSpriteIndex(const std::string &name) {
+	Uint16 getSpriteIndex(const std::string &name) {
 		return spritesMap[name];
 	}
 
-	AnimatedSprite::AnimatedSprite(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate)
-		: id(idCounter++), spriteSheetId(spriteSheetId), src(src), frameCount(frameCount), frameRate(frameRate), state(AnimationState::STOPPED), playing(false), looping(false), currentFrameOffset(0), startTime(0) {}
+	AnimatedSprite::AnimatedSprite(const Uint16 spriteId, const float frameRate)
+		: frameRate(frameRate), startTime(0), currentFrameOffset(0),  playing(false), looping(false), spriteId(spriteId), status(AnimationStatus::STOPPED) {}
 
-	AnimatedSprite AnimatedSprite::createInstance(const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate) {
-		return AnimatedSprite(spriteSheetId, src, frameCount, frameRate);
-	}
-
-	Uint64 createAnimatedSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate) {
-		animatedSprites.push_back(AnimatedSprite::createInstance(spriteSheetId, src, frameCount, frameRate));
-		animatedSpritesMap.insert(std::make_pair(name, animatedSprites.size() - 1));
-		return animatedSprites.size() - 1;
-	}
-
-	Uint64 getAnimatedSpriteIndex(const std::string &name) {
-		return animatedSpritesMap[name];
-	}
-
-	Uint64 AnimatedSprite::getCurrentFrame() {
-		Uint64 currentOffset = static_cast<Uint64>((getCurrentTime()  - startTime) / (1000 / frameRate));
+	Uint16 AnimatedSprite::getCurrentFrame() {
+		Uint16 currentOffset = static_cast<Uint16>((getCurrentTime()  - startTime) / (1000 / frameRate));
+		Uint16 frameCount = sprites[spriteId - 1].frameCount;
 		if (currentOffset < frameCount || looping) {
 			return currentOffset % frameCount;
 		}
-		stopAnimatedSprite(id);
+		stop();
 		return 0;
 	}
 
-	void playAnimatedSprite(const Uint64 id, bool loop) {
-		AnimatedSprite &animatedSprite = animatedSprites[id];
-		animatedSprite.looping = loop;
-		if (animatedSprite.state == AnimationState::PLAYING) return;
-		animatedSprite.state = AnimationState::PLAYING;
-		animatedSprite.playing = true;
-		animatedSprite.currentFrameOffset = 0;
-		animatedSprite.startTime = getCurrentTime();
+	void AnimatedSprite::play(bool loop) {
+		looping = loop;
+		if (status == AnimationStatus::PLAYING) return;
+		status = AnimationStatus::PLAYING;
+		playing = true;
+		currentFrameOffset = 0;
+		startTime = getCurrentTime();
 	}
 
-	void stopAnimatedSprite(const Uint64 id) {
-		AnimatedSprite &animatedSprite = animatedSprites[id];
-		animatedSprite.state = AnimationState::STOPPED;
-		animatedSprite.playing = false;
-		animatedSprite.currentFrameOffset = 0;
-		animatedSprite.looping = false;
+	void AnimatedSprite::stop() {
+		status = AnimationStatus::STOPPED;
+		playing = false;
+		currentFrameOffset = 0;
+		looping = false;
 	}
 
-	void resumeAnimatedSprite(const Uint64 id, bool loop) {
-		AnimatedSprite &animatedSprite = animatedSprites[id];
-		animatedSprite.looping = loop;
-		if (animatedSprite.state == AnimationState::PLAYING) return;
-		animatedSprite.state = AnimationState::PLAYING;
-		animatedSprite.playing = true;
-		animatedSprite.startTime = getCurrentTime();
+	void AnimatedSprite::resume(bool loop) {
+		looping = loop;
+		if (status == AnimationStatus::PLAYING) return;
+		status = AnimationStatus::PLAYING;
+		playing = true;
+		startTime = getCurrentTime();
 	}
 
-	void pauseAnimatedSprite(const Uint64 id) {
-		AnimatedSprite &animatedSprite = animatedSprites[id];
-		if (animatedSprite.state == AnimationState::PAUSED) return;
-		animatedSprite.state = AnimationState::PAUSED;
-		animatedSprite.playing = false;
-		animatedSprite.currentFrameOffset = animatedSprite.getCurrentFrame() + animatedSprite.currentFrameOffset % animatedSprite.frameCount;
-		animatedSprite.startTime = getCurrentTime();
+	// Probably shouldn't have to pass in frameCount...
+	void AnimatedSprite::pause() {
+		if (status == AnimationStatus::PAUSED) return;
+		Uint16 frameCount = sprites[spriteId - 1].frameCount;
+		status = AnimationStatus::PAUSED;
+		playing = false;
+		currentFrameOffset = getCurrentFrame() + currentFrameOffset % frameCount;
+		startTime = getCurrentTime();
 	}
 }

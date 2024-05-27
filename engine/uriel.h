@@ -5,8 +5,14 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 #include <string>
+#include <iostream>
 
 namespace Uriel {
+	struct Uint16Rect {
+		Uint16 x, y;
+		Uint16 w, h;
+	};
+
 	/// <summary>
 	/// Temporary.
 	/// </summary>
@@ -114,28 +120,6 @@ namespace Uriel {
 	bool keyIsReleased(const SDL_Scancode key);
 
 	/// <summary>
-	/// Draws a sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
-	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
-	/// </summary>
-	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
-	/// <param name="x">The x position of the sprite in game units.</param>
-	/// <param name="y">The y position of the sprite in game units.</param>
-	/// <param name="width">The width of the sprite in game units.</param>
-	/// <param name="height">The height of the sprite in game units.</param>
-	void drawSprite(const Uint64 spriteId, const float x, const float y, const float width, const float height);
-
-	/// <summary>
-	/// Draws the current frame of the animated sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
-	/// The animated sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
-	/// </summary>
-	/// <param name="animatedSprite">The id of the animated sprite that will be drawn.</param>
-	/// <param name="x">The x position of the sprite in game units.</param>
-	/// <param name="y">The y position of the sprite in game units.</param>
-	/// <param name="width">The width of the sprite in game units.</param>
-	/// <param name="height">The height of the sprite in game units.</param>
-	void drawAnimatedSprite(const Uint64 animatedSpriteId, const float x, const float y, const float width, const float height);
-
-	/// <summary>
 	/// Basic camera class used for rending.
 	/// </summary>
 	class Camera {
@@ -196,9 +180,9 @@ namespace Uriel {
 	/// </summary>
 	/// <param name="filepath">The path to the sprite sheet's source image.</param>
 	/// <returns>The id of the sprite sheet</returns>
-	Uint64 createSpriteSheet(const std::string &id, const std::string &filepath);
+	Uint16 createSpriteSheet(const std::string &id, const std::string &filepath);
 
-	Uint64 getSpriteSheetIndex(const std::string &name);
+	Uint16 getSpriteSheetIndex(const std::string &name);
 
 	/// <summary>
 	/// Creates a sprite and pushes it to the internal array.
@@ -206,43 +190,45 @@ namespace Uriel {
 	/// <param name="spriteSheetId">The id of the sprite sheet which contains' the sprite's texture.</param>
 	/// <param name="src">The top left originating bounds of the sprite within the spritesheet.</param>
 	/// <returns>The id of the sprite.</returns>
-	Uint64 createSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src);
-	Uint64 getSpriteIndex(const std::string &name);
+	Uint16 createSprite(const std::string &name, const Uint16 spriteSheetId, const SDL_Rect src, const Uint16 frameCount);
+
+	Uint16 getSpriteIndex(const std::string &name);
+
+	enum class AnimationStatus : Uint8 {
+		PLAYING,
+		PAUSED,
+		STOPPED,
+	};
+
+	class AnimatedSprite {
+	public:
+		AnimatedSprite(const Uint16 spriteId, const float frameRate);
+		Uint16 getCurrentFrame();
+
+		void play(bool loop = true);
+		void stop();
+		void resume(bool loop = true);
+		void pause();
+
+		float frameRate;
+		float startTime;
+		Uint16 currentFrameOffset;
+		bool playing;
+		bool looping;
+		const Uint16 spriteId;
+		AnimationStatus status;
+	};
 
 	/// <summary>
-	/// Creates an animated sprite and pushes it to the internal array.
+	/// Draws a sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
 	/// </summary>
-	/// <param name="spriteSheetId">The id of the sprite sheet which contain's the animated sprite's texture.</param>
-	/// <param name="src">The top left originating bounds of the sprite's first frame within the spritesheet.</param>
-	/// <param name="frameCount">The total number of frames in the animation.</param>
-	/// <param name="frameRate">How many frames are played per second.</param>
-	/// <returns>The id of the animated sprite.</returns>
-	Uint64 createAnimatedSprite(const std::string &name, const Uint64 spriteSheetId, const SDL_Rect src, const Uint64 frameCount, const float frameRate);
-	Uint64 getAnimatedSpriteIndex(const std::string &name);
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in game units.</param>
+	/// <param name="y">The y position of the sprite in game units.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height);
 
-	/// <summary>
-	/// Plays an animated sprite's animation from the first frame.
-	/// </summary>
-	/// <param name="id">The id of the animated sprite.</param>
-	/// <param name="loop">Whether the animation will loop after finishing once.</param>
-	void playAnimatedSprite(const Uint64 id, bool loop= true);
-
-	/// <summary>
-	/// Stops an animated sprite's animation from playing and resets it to the first frame. 
-	/// </summary>
-	/// <param name="id">The id of the animated sprite.</param>
-	void stopAnimatedSprite(const Uint64 id);
-
-	/// <summary>
-	/// Plays an animated sprite's animation from the current frame.
-	/// </summary>
-	/// <param name="id">The id of the animated sprite.</param>
-	/// <param name="loop">Whether the animation will loop after finishing once.</param>
-	void resumeAnimatedSprite(const Uint64 id, bool loop = true);
-
-	/// <summary>
-	/// Stops an animated sprite's animation from playing but maintains it's current frame. 
-	/// </summary>
-	/// <param name="id">The id of the animated sprite.</param>
-	void pauseAnimatedSprite(const Uint64 id);
+	void drawAnimatedSprite(AnimatedSprite &animationState, const float x, const float y, const float width, const float height);
 }

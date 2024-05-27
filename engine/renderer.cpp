@@ -12,7 +12,6 @@ namespace Uriel {
 
 	extern std::vector<SpriteSheet> spriteSheets;
 	extern std::vector<Sprite> sprites;
-	extern std::vector<AnimatedSprite> animatedSprites;
 	extern int windowWidth, windowHeight;
 	extern float windowHalfWidth, windowHalfHeight;
 
@@ -51,7 +50,7 @@ namespace Uriel {
 		resizeViewport();
 	}
 
-	void drawSprite(const Uint64 spriteId, const float x, const float y, const float width, const float height) {
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height) {
 		if (spriteId == 0) return;
 		SDL_Rect screenView = { 0, 0, viewport.w, viewport.h };
 		float cameraScaleX = viewport.w / activeCamera->width;
@@ -68,26 +67,24 @@ namespace Uriel {
 		destination.w = static_cast<int>(ceil(width * cameraScaleX));
 		destination.h = static_cast<int>(ceil(height * cameraScaleY));
 
-		//if (SDL_HasIntersection(&screenView, &destination))
 		SDL_RenderCopyEx(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
 	}
 
-
-	void drawAnimatedSprite(const Uint64 animatedSpriteId, const float x, const float y, const float width, const float height) {
+	void drawAnimatedSprite(AnimatedSprite &animationState, const float x, const float y, const float width, const float height) {
+		if (animationState.spriteId == 0) return;
 		SDL_Rect screenView = { 0, 0, viewport.w, viewport.h };
 		float cameraScaleX = viewport.w / activeCamera->width;
 		float cameraScaleY = viewport.h / activeCamera->height;
 		float halfWidth = width / 2;
 		float halfHeight = height / 2;
 
-		AnimatedSprite &animatedSprite = animatedSprites[animatedSpriteId];
-		SDL_Rect src = animatedSprite.src;
-		Uint64 totalOffset = animatedSprite.currentFrameOffset;
-		if (animatedSprite.playing) {
-			totalOffset += animatedSprite.getCurrentFrame();
+		Sprite &sprite = sprites[animationState.spriteId - 1];
+		SDL_Rect src = sprite.src;
+		Uint16 totalOffset = animationState.currentFrameOffset;
+		if (animationState.playing) {
+			totalOffset += animationState.getCurrentFrame();
 		}
-		src.x += static_cast<int>(totalOffset % animatedSprite.frameCount * src.w);
-		//std::cout << "X " << animatedSprite.frameRate << std::endl;
+		src.x += static_cast<int>(totalOffset % sprite.frameCount * src.w);
 
 		SDL_Rect destination;
 		// Round is more accurate but if extra performance is needed floor should be used.
@@ -97,13 +94,12 @@ namespace Uriel {
 		destination.w = static_cast<int>(ceil(width * cameraScaleX));
 		destination.h = static_cast<int>(ceil(height * cameraScaleY));
 
-		//if (SDL_HasIntersection(&screenView, &destination))
-		SDL_RenderCopyEx(renderer, spriteSheets[animatedSprites[animatedSpriteId].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
 	}
 
 	// Temporary
 	void renderText(const char *text) {
-		static TTF_Font* font = TTF_OpenFont("assets/bittypix.ttf", 24);
+		static TTF_Font* font = TTF_OpenFont("assets/fonts/bittypix.ttf", 24);
 		static SDL_Color fontColor = { 0, 0, 0 };
 		SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, fontColor);
 		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);

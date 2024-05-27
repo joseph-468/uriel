@@ -6,8 +6,6 @@ define Sprite {
 	h = "8",
 	spriteSheet = "Tiles",
 	frames = "1",
-	framerate = "0",
-	animated = "false",
 }
 
 <Sprite id="Wood" x="0" y="0">
@@ -17,6 +15,6 @@ define Sprite {
 <Sprite id="DoorClosed" x="32" y="0" w="8" h="24">
 <Sprite id="DoorOpenedRight" x="16" y="0" w="16" h="24">
 <Sprite id="DoorOpenedLeft" x="16" y="0" w="16" h="24">
-<Sprite id="Orb" x="0" y="32" animated="true" frames="4" framerate="3">
+<Sprite id="Orb" x="0" y="32" frames="4">
 <Sprite id="Player" x="0" y="0" w="12" h="24" spriteSheet="Entities">
 <Sprite id="Hills" x="0" y="0" w="192" h="108" spriteSheet="Backgrounds">
