@@ -3,7 +3,6 @@ define Tile {
 	w = "1",
 	h = "1",
 	collidable = "true",
-	animated = "false",
 }
 
 <Tile id="Wood">
@@ -13,4 +12,4 @@ define Tile {
 <Tile id="DoorClosed" w="1" h="3">
 <Tile id="DoorOpenedRight" w="2" h="3">
 <Tile id="DoorOpenedLeft" w="2" h="3">
-<Tile id="Orb" animated="true">
+<Tile id="Orb">

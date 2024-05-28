@@ -1,20 +1,27 @@
 #include <uriel.h>
 #include <algorithm>
 #include <vector>
+#include <unordered_map>
 
 #include "../include/game.h"
 #include "../include/tile.h"
 #include "../include/world.h"
 
 std::vector<TileType> tileTypes;
+std::unordered_map<std::string, Uint16> tileTypesMap;
 
-Tile::Tile() : typeId(0), spriteId(0) {}
+Tile::Tile() : typeId(0) {}
 
-Tile::Tile(const Uint64 typeId, const Uint64 spriteId) : typeId(typeId), spriteId(spriteId) {}
+Tile::Tile(const Uint16 typeId) : typeId(typeId) {}
 
-void createTileType(const std::string id, const Uint64 spriteId, const Uint8 width, const Uint8 height, const bool animated) {
-	TileType tileType(id, spriteId, width, height, animated);
+void createTileType(const std::string id, const Uint16 spriteId, const Uint8 width, const Uint8 height) {
+	TileType tileType(id, spriteId, width, height);
 	tileTypes.push_back(tileType);
+	tileTypesMap.insert(std::make_pair(id, tileTypes.size() - 1));
+}
+
+Uint16 getTileTypeIndex(const std::string &name) {
+	return tileTypesMap[name];
 }
 
 bool isCollidingWithTile(const World &world, SDL_FRect target, float collisionTolerance) {

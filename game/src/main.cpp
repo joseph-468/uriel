@@ -7,12 +7,6 @@
 #include "../include/world.h"
 #include "../include/external_data.h"
 
-
-// TODO
-// Reduce id sizes to 16 bit
-// Make sprites just one class
-// Add sprite current animation data to all tiles / entities
-
 using namespace Uriel;
 
 void displayFPS() {
@@ -56,7 +50,7 @@ int main(int argc, char *argv[]) {
 	if (!tilesResult) return 1;
 	std::vector<Tag> tileTags = tilesResult.value();
 	for (auto &tag : tileTags) {
-		createTileType(tag.getValue("id"), getSpriteIndex(tag.getValue("id")), std::stoi(tag.getValue("w")), std::stoi(tag.getValue("h")), tag.getValue("animated") == "true");
+		createTileType(tag.getValue("id"), getSpriteIndex(tag.getValue("id")), std::stoi(tag.getValue("w")), std::stoi(tag.getValue("h")));
 	}
 
 	Uint16 orb = getSpriteIndex("Orb");

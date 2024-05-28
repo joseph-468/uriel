@@ -21,7 +21,7 @@ void World::displayTile(const Uint64 x, const Uint64 y) {
 
 	Sint64 xPos = horizontalOffset + x * TILE_SIZE;
 	Sint64 yPos = verticalOffset - y * TILE_SIZE;
-	drawSprite(tile.spriteId, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
+	drawSprite(tileTypes[tile.typeId].spriteId, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
 }
 
 void World::displayTiles(const Camera &camera) {
@@ -55,7 +55,7 @@ World loadWorldFromFile(const std::string &filepath) {
 	std::vector<Tile> tiles;
 	getline(file, data);
 	for (char ch : data) {
-		tiles.push_back(Tile(ch - '0', ch - '0'));
+		tiles.push_back(Tile(ch - '0'));
 	}
 
 	return World(width, height, tiles);
@@ -66,10 +66,10 @@ World generateWorld() {
 	for (int y = 0; y < 64; y++) {
 		for (int x = 0; x < 256; x++) {
 			int id = 0;
-			if (y == 33) id = 3;
-			if (y > 33) id = 4;
-			if (y > 39) id = 2;
-			tiles.push_back(Tile(id , id));
+			if (y == 33) id = getTileTypeIndex("Grass");
+			if (y > 33) id = getTileTypeIndex("Dirt");
+			if (y > 39) id = getTileTypeIndex("Cobblestone");
+			tiles.push_back(Tile(id));
 		}
 	}
 	
