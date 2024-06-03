@@ -81,17 +81,17 @@ namespace Uriel {
 	}
 
 	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height) {
-		if (animatedSprite.spriteId == 0) return;
+		if (animatedSprite.getSpriteId() == 0) return;
 		SDL_Rect screenView = { 0, 0, viewport.w, viewport.h };
 		float cameraScaleX = viewport.w / activeCamera->width;
 		float cameraScaleY = viewport.h / activeCamera->height;
 		float halfWidth = width / 2;
 		float halfHeight = height / 2;
 
-		Sprite &sprite = sprites[animatedSprite.spriteId - 1];
+		Sprite &sprite = sprites[animatedSprite.getSpriteId()  - 1];
 		SDL_Rect src = sprite.src;
-		Uint16 totalOffset = animatedSprite.currentFrameOffset;
-		if (animatedSprite.playing) {
+		Uint16 totalOffset = animatedSprite.getCurrentFrameOffset();
+		if (animatedSprite.getPlaying()) {
 			totalOffset += animatedSprite.getCurrentFrame();
 		}
 		src.x += static_cast<int>(totalOffset % sprite.frameCount * src.w);

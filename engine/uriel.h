@@ -48,17 +48,29 @@ namespace Uriel {
 	//      |_____|    |______|  |_____|  |________| \______.'    //
 	//************************************************************//
 
+	/// <summary>
+	/// Basic templated rectangle struct.
+	/// </summary>
+	/// <typeparam name="T">The type the rect will use. float, double, int, unsigned int, etc.</typeparam>
 	template <typename T>
 	struct Rect {
 		T x, y;
 		T w, h;
 	};
 
+	/// <summary>
+	/// Basic 2D point class. Also known as a Vector2D but without associated methods.
+	/// </summary>
+	/// <typeparam name="T">The type the point will use. float, double, int, unsigned int, etc.</typeparam>
 	template <typename T>
 	struct Point2D {
 		T x, y;
 	};
 
+	/// <summary>
+	/// Basic 3D point class. Also known as a Vector3D but without associated methods.
+	/// </summary>
+	/// <typeparam name="T">The type the point will use. float, double, int, unsigned int, etc.</typeparam>
 	template <typename T>
 	struct Point3D {
 		T x, y, z;
@@ -137,17 +149,53 @@ namespace Uriel {
 	/// </summary>
 	class AnimatedSprite {
 	public:
+		/// <summary>
+		/// Constructor to create an instance of an animated sprite.
+		/// </summary>
+		/// <param name="spriteId">The id of the sprite that will be used.</param>
+		/// <param name="frameRate">The framerate the animation will play at in frames per second.</param>
 		AnimatedSprite(const Uint16 spriteId, const float frameRate);
+
+		inline bool getPlaying() { return playing; }
+		inline Uint16 getSpriteId() { return spriteId;  }
+		inline Uint16 getCurrentFrameOffset() { return currentFrameOffset; }
+
+		/// <summary>
+		/// Retrives the current frame as an offset. 0 = first frame 1 = second frame, etc.
+		/// </summary>
+		/// <returns>The current frame.</returns>
 		Uint16 getCurrentFrame();
 
+		/// <summary>
+		/// Plays the animation from the start unless it is already playing.
+		/// </summary>
+		/// <param name="loop">Whether the animation will loop.</param>
 		void play(bool loop = true);
+
+		/// <summary>
+		/// Stops the animation and resets it to the first frame.
+		/// </summary>
 		void stop();
+
+		/// <summary>
+		/// Resumes the animation from the current frame.
+		/// </summary>
+		/// <param name="loop">Whether the animation will loop.</param>
 		void resume(bool loop = true);
+
+		/// <summary>
+		/// Pauses the animation and leaves it on the current frame.
+		/// </summary>
 		void pause();
 
+		/// <summary>
+		/// The current frame rate. Can be changed without issue.
+		/// </summary>
 		float frameRate;
-		float startTime;
+
+	private:
 		Uint16 currentFrameOffset;
+		float startTime;
 		bool playing;
 		bool looping;
 		Uint16 spriteId;

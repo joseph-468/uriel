@@ -28,7 +28,7 @@ namespace Uriel {
 	Uint16 createSpriteSheet(const std::string &id, const std::string &filepath) {
 		spriteSheets.push_back(SpriteSheet::createInstance(filepath));
 		spriteSheetsMap.insert(std::make_pair(id, spriteSheets.size() - 1));
-		return spriteSheets.size() - 1;
+		return static_cast<Uint16>(spriteSheets.size() - 1);
 	}
 
 	Uint16 getSpriteSheetId(const std::string &name) {
@@ -44,7 +44,7 @@ namespace Uriel {
 	Uint16 createSprite(const std::string &name, const Uint16 spriteSheetId, const SDL_Rect src, const Uint16 frameCount) {
 		sprites.push_back(Sprite::createInstance(spriteSheetId, src, frameCount));
 		spritesMap.insert(std::make_pair(name, sprites.size()));
-		return sprites.size();
+		return static_cast<Uint16>(sprites.size());
 	}
 
 	Uint16 getSpriteId(const std::string &name) {

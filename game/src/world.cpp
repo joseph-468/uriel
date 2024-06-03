@@ -26,7 +26,7 @@ void World::displayTile(const Uint64 x, const Uint64 y) {
 		drawAnimatedSprite(tile.animatedSprite, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
 	}
 	else {
-		drawSprite(tile.animatedSprite.spriteId, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
+		drawSprite(tile.animatedSprite.getSpriteId(), static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
 	}
 }
 
