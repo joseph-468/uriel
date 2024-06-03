@@ -1,15 +1,17 @@
 define Tile {
-	id,
+	name,
 	w = "1",
 	h = "1",
+	animated = "false",
+	defaultFrameRate = "0",
 	collidable = "true",
 }
 
-<Tile id="Wood">
-<Tile id="Cobblestone">
-<Tile id="Grass">
-<Tile id="Dirt">
-<Tile id="DoorClosed" w="1" h="3">
-<Tile id="DoorOpenedRight" w="2" h="3">
-<Tile id="DoorOpenedLeft" w="2" h="3">
-<Tile id="Orb">
+<Tile name="Wood">
+<Tile name="Cobblestone">
+<Tile name="Grass">
+<Tile name="Dirt">
+<Tile name="DoorClosed" w="1" h="3">
+<Tile name="DoorOpenedRight" w="2" h="3">
+<Tile name="DoorOpenedLeft" w="2" h="3">
+<Tile name="Orb" animated="true" defaultFrameRate="3">

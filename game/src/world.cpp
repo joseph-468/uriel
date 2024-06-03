@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <string>
 
 #include "../include/game.h"
 #include "../include/world.h"
@@ -21,7 +22,12 @@ void World::displayTile(const Uint64 x, const Uint64 y) {
 
 	Sint64 xPos = horizontalOffset + x * TILE_SIZE;
 	Sint64 yPos = verticalOffset - y * TILE_SIZE;
-	drawSprite(tileTypes[tile.typeId].spriteId, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
+	if (tileTypes[tile.typeId].animated) {
+		drawAnimatedSprite(tile.animatedSprite, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
+	}
+	else {
+		drawSprite(tile.animatedSprite.spriteId, static_cast<float>(xPos), static_cast<float>(yPos), TILE_SIZE, TILE_SIZE);
+	}
 }
 
 void World::displayTiles(const Camera &camera) {
@@ -43,33 +49,15 @@ void World::displayTiles(const Camera &camera) {
 	}
 }
 
-World loadWorldFromFile(const std::string &filepath) {
-	std::ifstream file(filepath);
-	std::string data;
-
-	getline(file, data);
-	Sint64 width = stoi(data);
-	getline(file, data);
-	Sint64 height = stoi(data);
-
-	std::vector<Tile> tiles;
-	getline(file, data);
-	for (char ch : data) {
-		tiles.push_back(Tile(ch - '0'));
-	}
-
-	return World(width, height, tiles);
-}
-
 World generateWorld() {
 	std::vector<Tile> tiles;
 	for (int y = 0; y < 64; y++) {
 		for (int x = 0; x < 256; x++) {
-			int id = 0;
-			if (y == 33) id = getTileTypeIndex("Grass");
-			if (y > 33) id = getTileTypeIndex("Dirt");
-			if (y > 39) id = getTileTypeIndex("Cobblestone");
-			tiles.push_back(Tile(id));
+			std::string tileType;
+			if (y == 33) tileType = "Grass";
+			if (y > 33) tileType = "Dirt";
+			if (y > 39) tileType = "Cobblestone";
+			tiles.push_back(Tile(getTileTypeId(tileType), getSpriteId(tileType)));
 		}
 	}
 	

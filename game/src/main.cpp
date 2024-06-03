@@ -18,7 +18,7 @@ void displayFPS() {
 int main(int argc, char *argv[]) {
 	init(1280, 720, "Uriel Test");
 
-	Camera camera(0, 0, 1280, 720);
+	Camera camera(0, 0, 2560, 1440);
 	setActiveCamera(camera);
 
 	// Load sprite sheets 
@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 	if (!spriteSheetsResult) return 1;
 	std::vector<Tag> spriteSheetTags = spriteSheetsResult.value();
 	for (auto &tag : spriteSheetTags) {
-		createSpriteSheet(tag.getValue("id"), tag.getValue("filepath"));
+		createSpriteSheet(tag.getValue("name"), tag.getValue("filepath"));
 	}
 
 	// Load sprites
@@ -34,8 +34,8 @@ int main(int argc, char *argv[]) {
 	if (!spritesResult) return 1;
 	std::vector<Tag> spriteTags = spritesResult.value();
 	for (auto &tag : spriteTags) {
-		std::string name = tag.getValue("id");
-		Uint16 spriteSheet = getSpriteSheetIndex(tag.getValue("spriteSheet"));
+		std::string name = tag.getValue("name");
+		Uint16 spriteSheet = getSpriteSheetId(tag.getValue("spriteSheet"));
 		Uint16 frameCount = std::stoi(tag.getValue("frames"));
 		SDL_Rect src;
 		src.x = std::stoi(tag.getValue("x"));
@@ -50,18 +50,26 @@ int main(int argc, char *argv[]) {
 	if (!tilesResult) return 1;
 	std::vector<Tag> tileTags = tilesResult.value();
 	for (auto &tag : tileTags) {
-		createTileType(tag.getValue("id"), getSpriteIndex(tag.getValue("id")), std::stoi(tag.getValue("w")), std::stoi(tag.getValue("h")));
+		createTileType(tag.getValue("name"), getSpriteId(tag.getValue("name")),
+			std::stoi(tag.getValue("w")), std::stoi(tag.getValue("h")),
+			std::stof(tag.getValue("defaultFrameRate")), tag.getValue("animated") == "true");
 	}
 
-	Uint16 orb = getSpriteIndex("Orb");
-	AnimatedSprite animatedOrb(orb, 3);
-	Uint16 playerSprite = getSpriteIndex("Player");
-	Uint16 backgroundSprite = getSpriteIndex("Hills");
-
-	bool controllingCamera = false;
-	SDL_FRect player = { 0, 0, 32, 64};
+	Uint16 playerSprite = getSpriteId("Player");
+	Uint16 backgroundSprite = getSpriteId("Hills");
 
 	World currentWorld = generateWorld();
+
+	bool controllingCamera = false;
+
+	SDL_FRect player = { 0, TILE_SIZE, (TILE_SIZE * 2) - (TILE_SIZE * 2 / 8), (TILE_SIZE * 4) - (TILE_SIZE * 4 / 8) };
+	float xVel = 0;
+	float yVel = 0;
+
+	int prevButton = -69;
+	int prevBlockX = -6969;
+	int prevBlockY = -696969;
+	std::string equippedBlock = "Cobblestone";
 
 	while (tick()) {
 		// Input
@@ -69,10 +77,28 @@ int main(int argc, char *argv[]) {
 			switch (event.type) {
 				case SDL_MOUSEWHEEL: {
 					if (!controllingCamera) break;
-					float distance = event.wheel.y * -10;
+					float distance = event.wheel.y * -100;
 					float widthRatio = camera.width / camera.height;
 					camera.width += distance * widthRatio;
 					camera.height += distance;
+				} break;
+				case SDL_MOUSEBUTTONDOWN: {
+					int x, y;
+					SDL_GetMouseState(&x, &y);
+					SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(x, y);
+					int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
+					int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
+					if (event.button.button == prevButton && prevBlockX == worldX && prevBlockY == worldY) break;
+					if (event.button.button == SDL_BUTTON_LEFT) {
+						currentWorld.tiles[worldX + worldY * currentWorld.width].typeId = 0;
+					}
+					else {
+						currentWorld.tiles[worldX + worldY * currentWorld.width] = Tile(getTileTypeId(equippedBlock), getSpriteId(equippedBlock));
+						currentWorld.tiles[worldX + worldY * currentWorld.width].animatedSprite.play();
+					}
+					prevButton = event.button.button;
+					prevBlockX = worldX;
+					prevBlockY = worldY;
 				} break;
 			}
 		}
@@ -87,14 +113,11 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if (keyIsPressed(SDL_SCANCODE_F1)) animatedOrb.play(true);
-		if (keyIsPressed(SDL_SCANCODE_F2)) animatedOrb.stop();
-		if (keyIsPressed(SDL_SCANCODE_F3)) animatedOrb.resume();
-		if (keyIsPressed(SDL_SCANCODE_F4)) animatedOrb.pause();
+		if (keyIsPressed(SDL_SCANCODE_F1)) equippedBlock = "Cobblestone";
+		if (keyIsPressed(SDL_SCANCODE_F2)) equippedBlock = "Orb";
 
-		float xVel = 0;
-		float yVel = 0;
-
+		xVel = 0;
+		yVel = 0;
 		if (controllingCamera) {
 			if (keyIsDown(SDL_SCANCODE_W)) camera.y += 1 * deltaTime;
 			if (keyIsDown(SDL_SCANCODE_A)) camera.x -= 1 * deltaTime;
@@ -103,9 +126,13 @@ int main(int argc, char *argv[]) {
 		}
 		else {
 			if (keyIsDown(SDL_SCANCODE_W)) yVel = 0.2 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_A)) xVel = -0.2 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_S)) yVel = -0.2 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_D)) xVel = 0.2 * deltaTime;
+			else yVel = -0.2 * deltaTime;
+			if (keyIsDown(SDL_SCANCODE_A)) {
+				xVel = -0.1 * deltaTime;
+			}
+			if (keyIsDown(SDL_SCANCODE_D)) {
+				xVel = 0.1 * deltaTime;
+			}
 		}
 
 		moveAndResolveCollision(currentWorld, player, xVel, yVel);
@@ -121,7 +148,6 @@ int main(int argc, char *argv[]) {
 		currentWorld.displayTiles(camera);
 
 		drawSprite(playerSprite, player.x, player.y, player.w, player.h);
-		drawAnimatedSprite(animatedOrb, player.x, player.y + 64, 32, 32);
 
 		displayFPS();
 	}

@@ -2,29 +2,35 @@
 #include <iostream>
 
 void moveAndResolveCollision(World &currentWorld, SDL_FRect &target, float &xVel, float &yVel) {
-	Uint64 iterations = static_cast<Uint64>(ceil(deltaTime * 2));
-	if (iterations > 128) iterations = 128;
+	Uint64 iterations = static_cast<Uint64>(ceil(deltaTime * 4));
+	if (iterations > 256) iterations = 256;
 	float prevX = target.x;
 	float prevY = target.y;
+	bool collidedX = false;
+	bool collidedY = false;
 	bool collided;
 
 	for (int i = 0; i < iterations; i++) {
 		target.x += xVel / iterations;
-		collided = isCollidingWithTile(currentWorld, target, 0.1f);
+		collided = isCollidingWithTile(currentWorld, target, 0.2f);
 		if (collided) {
 			target.x = prevX;
-			break;
+			collidedX = true;
 		}
-		prevX = target.x;
-	}
+		else {
+			prevX = target.x;
+		}
 
-	for (int i = 0; i < iterations; i++) {
 		target.y += yVel / iterations;
-		collided = isCollidingWithTile(currentWorld, target, 0.1f);
+		collided = isCollidingWithTile(currentWorld, target, 0.2f);
 		if (collided) {
 			target.y = prevY;
-			break;
+			collidedY = true;
 		}
-		prevY = target.y;
-	}
+		else {
+			prevY = target.y;
+		}
+
+		if (collidedX && collidedY) return;
+	} 
 }

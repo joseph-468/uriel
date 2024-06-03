@@ -31,7 +31,7 @@ namespace Uriel {
 		return spriteSheets.size() - 1;
 	}
 
-	Uint16 getSpriteSheetIndex(const std::string &name) {
+	Uint16 getSpriteSheetId(const std::string &name) {
 		return spriteSheetsMap[name];
 	}
 
@@ -47,7 +47,7 @@ namespace Uriel {
 		return sprites.size();
 	}
 
-	Uint16 getSpriteIndex(const std::string &name) {
+	Uint16 getSpriteId(const std::string &name) {
 		return spritesMap[name];
 	}
 

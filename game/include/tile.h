@@ -6,6 +6,8 @@
 
 #include "world.h"
 
+using namespace Uriel;
+
 class World;
 class TileType;
 
@@ -18,18 +20,21 @@ public:
 	const Uint16 spriteId;
 	const Uint8 width;
 	const Uint8 height;
+	const float defaultFrameRate;
+	const bool animated;
 };
 
-Uint16 getTileTypeIndex(const std::string &name);
+Uint16 getTileTypeId(const std::string &name);
 
-void createTileType(const std::string id, const Uint16 spriteId, const Uint8 width, const Uint8 height);
+void createTileType(const std::string id, const Uint16 spriteId, const Uint8 width, const Uint8 height, const float defaultFrameRate, const bool animated);
 
 class Tile {
 public:
 	Tile();
-	Tile(const Uint16 typeId);
+	Tile(const Uint16 typeId, const Uint16 spriteId);
 
 	Uint16 typeId;
+	AnimatedSprite animatedSprite;
 };
 
 bool isCollidingWithTile(const World &world, SDL_FRect target, float collisionTolerance);
