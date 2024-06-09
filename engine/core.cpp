@@ -2,6 +2,7 @@
 #include <array>
 
 #include "uriel.h"
+#include "internal.h"
 
 namespace Uriel {
 	extern constexpr const size_t MAX_EVENTS = 256;
@@ -16,6 +17,7 @@ namespace Uriel {
 
 	extern SDL_Renderer *renderer;
 	extern Camera *activeCamera;
+	extern Uint16 customCursor;
 
 	extern size_t currentEvent;
 	extern std::array<SDL_Event, MAX_EVENTS> eventQueue;
@@ -33,6 +35,20 @@ namespace Uriel {
 		windowHeight = height;
 		windowHalfWidth = static_cast<float>(width) / 2;
 		windowHalfHeight= static_cast<float>(height) / 2;
+	}
+
+	int getWindowWidth() {
+		return windowWidth;
+	}
+
+	int getWindowHeight() {
+		return windowHeight;
+	}
+
+	void setCursor(const Uint16 spriteId) {
+		if (spriteId) SDL_ShowCursor(SDL_DISABLE);
+		else SDL_ShowCursor(SDL_ENABLE);
+		customCursor = spriteId;
 	}
 
 	Uint64 getFPS() {
@@ -125,6 +141,8 @@ namespace Uriel {
 				currentKeyboardState[event.key.keysym.scancode] = SDL_RELEASED;
 			}
 		}
+
+		drawCursor();
 
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);

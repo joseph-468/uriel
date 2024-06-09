@@ -9,9 +9,11 @@ namespace Uriel {
 	Camera *activeCamera = nullptr;
 	SDL_Rect viewport;
 	bool maintainAspectRatio = true;
+	Uint16 customCursor = 0;
 
 	extern std::vector<SpriteSheet> spriteSheets;
 	extern std::vector<Sprite> sprites;
+	extern SDL_Window *window;
 	extern int windowWidth, windowHeight;
 	extern float windowHalfWidth, windowHalfHeight;
 
@@ -31,6 +33,7 @@ namespace Uriel {
 		float relativeX = viewportX * widthRatio - width / 2 + this->x;
 		float relativeY = (viewportY * heightRatio - height / 2 - this->y) * -1;
 		return { relativeX, relativeY };
+
 	}
 
 	void resizeViewport() {
@@ -58,6 +61,28 @@ namespace Uriel {
 	void setActiveCamera(Camera &camera) {
 		activeCamera = &camera;
 		resizeViewport();
+	}
+
+	void drawCursor() {
+		static bool cursorVisible = true;
+		if (customCursor) {
+			const Sprite &sprite = sprites[customCursor - 1];
+			SDL_Rect dst = { 0, 0, sprite.src.w, sprite.src.h };
+			int windowX, windowY;
+			SDL_GetWindowPosition(window, &windowX, &windowY);
+			SDL_GetGlobalMouseState(&dst.x, &dst.y);
+			dst.x -= windowX;
+			dst.y -= windowY;
+			bool prevCursorVisible = cursorVisible;
+			if (dst.x < viewport.x || dst.x >= viewport.x + viewport.w) cursorVisible = true;
+			else if (dst.y < viewport.y || dst.y >= viewport.y + viewport.h) cursorVisible = true;
+			else cursorVisible = false;
+			if (cursorVisible != prevCursorVisible) SDL_ShowCursor(cursorVisible);
+			dst.x -= viewport.x;
+			dst.y -= viewport.y;
+			SDL_RenderCopy(renderer, spriteSheets[sprite.spriteSheetId].texture, &sprite.src, &dst);
+		}
+
 	}
 
 	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height) {

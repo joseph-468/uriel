@@ -55,14 +55,14 @@ int main(int argc, char *argv[]) {
 			std::stof(tag.getValue("defaultFrameRate")), tag.getValue("animated") == "true");
 	}
 
-	Uint16 playerSprite = getSpriteId("Player");
 	Uint16 backgroundSprite = getSpriteId("Hills");
 
 	World currentWorld = generateWorld();
 
 	bool controllingCamera = false;
 
-	SDL_FRect player = { 0, TILE_SIZE, (TILE_SIZE * 2) - (TILE_SIZE * 2 / 8), (TILE_SIZE * 4) - (TILE_SIZE * 4 / 8) };
+	Uint16 playerSprite = getSpriteId("Player");
+	SDL_FRect player = { 0, TILE_SIZE, (TILE_SIZE * 2) - (TILE_SIZE * 2 / 8), (TILE_SIZE * 3) - (TILE_SIZE * 3 / 8) };
 	float xVel = 0;
 	float yVel = 0;
 
@@ -70,6 +70,8 @@ int main(int argc, char *argv[]) {
 	int prevBlockX = -6969;
 	int prevBlockY = -696969;
 	std::string equippedBlock = "Cobblestone";
+
+	setCursor(getSpriteId("DefaultCursor"));
 
 	while (tick()) {
 		// Input

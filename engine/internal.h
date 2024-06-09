@@ -5,6 +5,7 @@
 
 namespace Uriel {
 	float getCurrentTime();
+	void drawCursor();
 
 	class SpriteSheet {
 	public:

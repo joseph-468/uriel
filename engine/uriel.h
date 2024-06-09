@@ -250,6 +250,25 @@ namespace Uriel {
 	bool tick();
 
 	/// <summary>
+	/// Replaces the default system cursor with a sprite.
+	/// If spriteId is 0 the default system cursor will be rendered instead.
+	/// </summary>
+	/// <param name="spriteId">The id of the new cursor's sprite.</param>
+	void setCursor(const Uint16 spriteId);
+
+	/// <summary>
+	/// Gets the width of the window.
+	/// </summary>
+	/// <returns>The window of the window in pixels.</returns>
+	int getWindowWidth();
+
+	/// <summary>
+	/// Gets the height of the window.
+	/// </summary>
+	/// <returns>The height of the window in pixels.</returns>
+	int getWindowHeight();
+
+	/// <summary>
 	/// Fetches the next event from the event queue, stores it in Uriel::event, and then removes it from the queue.
 	/// </summary>
 	/// <returns>True if there is a pending event, otherwise false.</returns>
