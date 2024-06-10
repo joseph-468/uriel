@@ -76,43 +76,28 @@ int main(int argc, char *argv[]) {
 
 	while (tick()) {
 		// Input
-		while (getEvent()) {
+		SDL_Event event;
+		while (getEvent(event)) {
 			switch (event.type) {
-				case SDL_MOUSEWHEEL: {
-					if (!controllingCamera) break;
-					float distance = event.wheel.y * -100;
-					float widthRatio = camera.width / camera.height;
-					camera.width += distance * widthRatio;
-					camera.height += distance;
-				} break;
-				case SDL_MOUSEBUTTONDOWN: {
-					int x, y;
-					SDL_GetMouseState(&x, &y);
-					SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(x, y);
-					int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
-					int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
-					if (event.button.button == prevButton && prevBlockX == worldX && prevBlockY == worldY) break;
-					if (event.button.button == SDL_BUTTON_LEFT) {
-						currentWorld.tiles[worldX + worldY * currentWorld.width].typeId = 0;
-					}
-					else {
-						currentWorld.tiles[worldX + worldY * currentWorld.width] = Tile(getTileTypeId(equippedBlock), getSpriteId(equippedBlock));
-						currentWorld.tiles[worldX + worldY * currentWorld.width].animatedSprite.play();
-					}
-					prevButton = event.button.button;
-					prevBlockX = worldX;
-					prevBlockY = worldY;
-				} break;
+			case SDL_MOUSEWHEEL: {
+				if (!controllingCamera) break;
+				float distance = event.wheel.y * -100;
+				float widthRatio = camera.width / camera.height;
+				camera.width += distance * widthRatio;
+				camera.height += distance;
+			} break;
+			case SDL_MOUSEBUTTONDOWN: {
+			} break;
 			}
 		}
 
-		if (keyIsPressed(SDL_SCANCODE_F11)) {
+		if (isKeyPressed(SDL_SCANCODE_F11)) {
 			fullscreen = fullscreen ? false : true;
 			toggleFullscreen(fullscreen);
 		}
 
 		// Logic
-		if (keyIsPressed(SDL_SCANCODE_ESCAPE)) {
+		if (isKeyPressed(SDL_SCANCODE_ESCAPE)) {
 			if (controllingCamera) {
 				controllingCamera = false;
 			}
@@ -121,24 +106,52 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if (keyIsPressed(SDL_SCANCODE_F1)) equippedBlock = "Cobblestone";
-		if (keyIsPressed(SDL_SCANCODE_F2)) equippedBlock = "Orb";
+		if (isKeyPressed(SDL_SCANCODE_F1)) equippedBlock = "Cobblestone";
+		if (isKeyPressed(SDL_SCANCODE_F2)) equippedBlock = "Orb";
+
+		if (isMouseDown(MouseButton::LEFT)) {
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(x, y);
+			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
+			int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
+			if (prevBlockX != worldX || prevBlockY != worldY) {
+				currentWorld.tiles[worldX + worldY * currentWorld.width].typeId = 0;
+				prevButton = MouseButton::LEFT;
+				prevBlockX = worldX;
+				prevBlockY = worldY;
+			}
+		}
+		if (isMousePressed(MouseButton::RIGHT)) {
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(x, y);
+			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
+			int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
+			if (prevBlockX != worldX || prevBlockY != worldY) {
+				currentWorld.tiles[worldX + worldY * currentWorld.width] = Tile(getTileTypeId(equippedBlock), getSpriteId(equippedBlock));
+				currentWorld.tiles[worldX + worldY * currentWorld.width].animatedSprite.play();
+				prevButton = MouseButton::RIGHT;
+				prevBlockX = worldX;
+				prevBlockY = worldY;
+			}
+		}
 
 		xVel = 0;
 		yVel = 0;
 		if (controllingCamera) {
-			if (keyIsDown(SDL_SCANCODE_W)) camera.y += 1 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_A)) camera.x -= 1 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_S)) camera.y -= 1 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_D)) camera.x += 1 * deltaTime;
+			if (isKeyDown(SDL_SCANCODE_W)) camera.y += 1 * deltaTime;
+			if (isKeyDown(SDL_SCANCODE_A)) camera.x -= 1 * deltaTime;
+			if (isKeyDown(SDL_SCANCODE_S)) camera.y -= 1 * deltaTime;
+			if (isKeyDown(SDL_SCANCODE_D)) camera.x += 1 * deltaTime;
 		}
 		else {
-			if (keyIsDown(SDL_SCANCODE_W)) yVel = 0.2 * deltaTime;
+			if (isKeyDown(SDL_SCANCODE_W)) yVel = 0.2 * deltaTime;
 			else yVel = -0.2 * deltaTime;
-			if (keyIsDown(SDL_SCANCODE_A)) {
+			if (isKeyDown(SDL_SCANCODE_A)) {
 				xVel = -0.1 * deltaTime;
 			}
-			if (keyIsDown(SDL_SCANCODE_D)) {
+			if (isKeyDown(SDL_SCANCODE_D)) {
 				xVel = 0.1 * deltaTime;
 			}
 		}

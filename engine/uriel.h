@@ -34,11 +34,6 @@ namespace Uriel {
 	/// </summary>
 	extern bool maintainAspectRatio;
 
-	/// <summary>
-	/// SDL_Event struct containing the most recent return value of getEvent.
-	/// </summary>
-	extern SDL_Event event;
-
 	//************************************************************//
 	//     _________  ____  ____  _______  ________   ______      //
 	//    |  _   _  ||_  _||_  _||_   __ \|_   __  |.' ____ \     //
@@ -202,6 +197,14 @@ namespace Uriel {
 		AnimationStatus status;
 	};
 
+	enum MouseButton {
+		LEFT = 1,
+		MIDDLE = 2,
+		RIGHT = 3,
+		BACKWARDS = 4,
+		FORWARD = 5,	
+	};
+
 	//******************************************************************************************************//
 	//     ________  _____  _____  ____  _____   ______  _________  _____   ___   ____  _____   ______      //
 	//    |_   __  ||_   _||_   _||_   \|_   _|.' ___  ||  _   _  ||_   _|.'   `.|_   \|_   _|.' ____ \     //
@@ -280,7 +283,7 @@ namespace Uriel {
 	/// Fetches the next event from the event queue, stores it in Uriel::event, and then removes it from the queue.
 	/// </summary>
 	/// <returns>True if there is a pending event, otherwise false.</returns>
-	bool getEvent();
+	bool getEvent(SDL_Event &event);
 
 	/// <summary>
 	/// Gets the number of seconds since Uriel::init() was called. This doesn't include the time taken to initialize the engine as it's computed at the end of the function.
@@ -299,28 +302,56 @@ namespace Uriel {
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key is being held down.</returns>
-	bool keyIsDown(const SDL_Scancode key);
+	bool isKeyDown(const SDL_Scancode key);
 
 	/// <summary>
 	/// Checks whether a key is currently not held down. 
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key is not being held down.</returns>
-	bool keyIsUp(const SDL_Scancode key);
+	bool isKeyUp(const SDL_Scancode key);
 
 	/// <summary>
 	/// Checks whether a key has just been pressed. 
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key is being held down and wasn't being held down the previous tick.</returns>
-	bool keyIsPressed(const SDL_Scancode key);
+	bool isKeyPressed(const SDL_Scancode key);
 
 	/// <summary>
 	/// Checks whether a key has just been released. 
 	/// </summary>
 	/// <param name="key">The SDL scancode of the key to be checked.</param>
 	/// <returns>True if the key isn't being held down and wasn't being held down the previous tick.</returns>
-	bool keyIsReleased(const SDL_Scancode key);
+	bool isKeyReleased(const SDL_Scancode key);
+
+	/// <summary>
+	/// Checks whether a mouse button is currently held down.
+	/// </summary>
+	/// <param name="button">The mouse button to be checked.</param>
+	/// <returns>True if the button is being held down.</returns>
+	bool isMouseDown(const MouseButton button);
+
+	/// <summary>
+	/// Checks whether a mouse button is currently not held down. 
+	/// </summary>
+	/// <param name="key">The mouse button to be checked.</param>
+	/// <returns>True if the button is not being held down.</returns>
+	bool isMouseUp(const MouseButton button);
+
+	/// <summary>
+	/// Checks whether a mouse button has just been pressed. 
+	/// </summary>
+	/// <param name="key">The button to be checked.</param>
+	/// <returns>True if the button is being held down and wasn't being held down the previous tick.</returns>
+	bool isMousePressed(const MouseButton button);
+
+	/// <summary>
+	/// Checks whether a mouse button has just been released. 
+	/// </summary>
+	/// <param name="key">The mouse button to be checked.</param>
+	/// <returns>True if the button isn't being held down and wasn't being held down the previous tick.</returns>
+	bool isMouseReleased(const MouseButton button);
 
 	/// <summary>
 	/// Sets the camera that will be used by the renderer.

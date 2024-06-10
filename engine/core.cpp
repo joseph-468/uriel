@@ -23,6 +23,8 @@ namespace Uriel {
 	extern std::array<SDL_Event, MAX_EVENTS> eventQueue;
 	extern std::array<Uint8, SDL_NUM_SCANCODES> currentKeyboardState;
 	extern std::array<Uint8, SDL_NUM_SCANCODES> previousKeyboardState;
+	extern std::array<Uint8, 8> currentMouseState;
+	extern std::array<Uint8, 8> previousMouseState;
 
 	void resizeViewport();
 
@@ -118,6 +120,7 @@ namespace Uriel {
 		static Uint64 previousTime = 0;
 
 		previousKeyboardState = currentKeyboardState;
+		previousMouseState = currentMouseState;
 
 		size_t i = 0;
 		eventQueue.fill(NULL_EVENT);
@@ -143,6 +146,12 @@ namespace Uriel {
 			}
 			else if (event.type == SDL_KEYUP) {
 				currentKeyboardState[event.key.keysym.scancode] = SDL_RELEASED;
+			}
+			else if (event.type == SDL_MOUSEBUTTONDOWN) {
+				currentMouseState[event.button.button] = SDL_PRESSED;
+			}
+			else if (event.type == SDL_MOUSEBUTTONUP) {
+				currentMouseState[event.button.button] = SDL_RELEASED;
 			}
 		}
 
