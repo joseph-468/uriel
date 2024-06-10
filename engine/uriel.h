@@ -269,6 +269,14 @@ namespace Uriel {
 	int getWindowHeight();
 
 	/// <summary>
+	/// Toggles the window to fullsreen.
+	/// The fullscreen mode is desktop fullscreen not windowed fullscreen.
+	/// Previous window size and position are preserved.
+	/// </summary>
+	/// <param name="toggle">Whether to go fullscreen.</param>
+	void toggleFullscreen(const bool toggle);
+
+	/// <summary>
 	/// Fetches the next event from the event queue, stores it in Uriel::event, and then removes it from the queue.
 	/// </summary>
 	/// <returns>True if there is a pending event, otherwise false.</returns>

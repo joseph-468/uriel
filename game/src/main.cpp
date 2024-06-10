@@ -18,7 +18,7 @@ void displayFPS() {
 int main(int argc, char *argv[]) {
 	init(1280, 720, "Uriel Test");
 
-	Camera camera(0, 0, 2560, 1440);
+	Camera camera(0, 0, 1280, 720);
 	setActiveCamera(camera);
 
 	// Load sprite sheets 
@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
 	World currentWorld = generateWorld();
 
 	bool controllingCamera = false;
+	bool fullscreen = false;
 
 	Uint16 playerSprite = getSpriteId("Player");
 	SDL_FRect player = { 0, TILE_SIZE, (TILE_SIZE * 2) - (TILE_SIZE * 2 / 8), (TILE_SIZE * 3) - (TILE_SIZE * 3 / 8) };
@@ -103,6 +104,11 @@ int main(int argc, char *argv[]) {
 					prevBlockY = worldY;
 				} break;
 			}
+		}
+
+		if (keyIsPressed(SDL_SCANCODE_F11)) {
+			fullscreen = fullscreen ? false : true;
+			toggleFullscreen(fullscreen);
 		}
 
 		// Logic
