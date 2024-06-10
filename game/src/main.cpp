@@ -56,7 +56,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	Uint16 backgroundSprite = getSpriteId("Hills");
-
 	World currentWorld = generateWorld();
 
 	bool controllingCamera = false;
