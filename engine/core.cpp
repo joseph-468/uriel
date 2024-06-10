@@ -51,6 +51,12 @@ namespace Uriel {
 		SDL_SetWindowFullscreen(window, toggle ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 	}
 
+	void setWindowSize(const int width, const int height) {
+		SDL_SetWindowSize(window, width, height);
+		updateWindowSize(width, height);
+		resizeViewport();
+	}
+
 	void setCursor(const Uint16 spriteId) {
 		if (spriteId) SDL_ShowCursor(SDL_DISABLE);
 		else SDL_ShowCursor(SDL_ENABLE);

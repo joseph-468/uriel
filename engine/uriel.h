@@ -280,6 +280,14 @@ namespace Uriel {
 	void toggleFullscreen(const bool toggle);
 
 	/// <summary>
+	/// Changes the size of the window.
+	/// The title bar is not included in the size.
+	/// </summary>
+	/// <param name="width">The width of the window in pixels.</param>
+	/// <param name="height">The height of the window in pixels.</param>
+	void setWindowSize(const int width, const int height);
+
+	/// <summary>
 	/// Fetches the next event from the event queue, stores it in Uriel::event, and then removes it from the queue.
 	/// </summary>
 	/// <returns>True if there is a pending event, otherwise false.</returns>
