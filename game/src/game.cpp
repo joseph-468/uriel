@@ -1,7 +1,7 @@
 #include "../include/game.h"
 #include <iostream>
 
-void moveAndResolveCollision(World &currentWorld, SDL_FRect &target, float &xVel, float &yVel) {
+void moveAndResolveCollision(World &world, SDL_FRect &target, float &xVel, float &yVel) {
 	Uint64 iterations = static_cast<Uint64>(ceil(deltaTime * 4));
 	if (iterations > 512) iterations = 512;
 	float prevX = target.x;
@@ -12,7 +12,7 @@ void moveAndResolveCollision(World &currentWorld, SDL_FRect &target, float &xVel
 
 	for (int i = 0; i < iterations; i++) {
 		target.x += xVel / iterations;
-		collided = isCollidingWithTile(currentWorld, target, 0.02f);
+		collided = isCollidingWithTile(world, target, 0.02);
 		if (collided) {
 			target.x = prevX;
 			collidedX = true;
@@ -22,7 +22,7 @@ void moveAndResolveCollision(World &currentWorld, SDL_FRect &target, float &xVel
 		}
 
 		target.y += yVel / iterations;
-		collided = isCollidingWithTile(currentWorld, target, 0.02f);
+		collided = isCollidingWithTile(world, target, 0.02);
 		if (collided) {
 			target.y = prevY;
 			collidedY = true;
@@ -33,4 +33,10 @@ void moveAndResolveCollision(World &currentWorld, SDL_FRect &target, float &xVel
 
 		if (collidedX && collidedY) return;
 	} 
+}
+
+bool isTouchingGround(World &world, SDL_FRect target) {
+	target.y -= target.h / 2 + 4;
+	target.h = 8;
+	return isCollidingWithTile(world, target, 0.02);
 }

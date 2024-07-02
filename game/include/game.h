@@ -4,4 +4,5 @@
 
 constexpr const Sint64 TILE_SIZE = 32;
 
-void moveAndResolveCollision(World &currentWorld, SDL_FRect &target, float &xVel, float &yVel);
+void moveAndResolveCollision(World &world, SDL_FRect &target, float &xVel, float &yVel);
+bool isTouchingGround(World &world, SDL_FRect target);

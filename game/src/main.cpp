@@ -65,6 +65,8 @@ int main(int argc, char *argv[]) {
 	SDL_FRect player = { 0, TILE_SIZE, (TILE_SIZE * 2) - (TILE_SIZE * 2 / 8), (TILE_SIZE * 3) - (TILE_SIZE * 3 / 8) };
 	float xVel = 0;
 	float yVel = 0;
+	float jumping = 0;
+	double jumpTime = 0;
 
 	int prevButton = -69;
 	int prevBlockX = -6969;
@@ -145,14 +147,30 @@ int main(int argc, char *argv[]) {
 			if (isKeyDown(SDL_SCANCODE_D)) camera.x += 1 * deltaTime;
 		}
 		else {
-			if (isKeyDown(SDL_SCANCODE_W)) yVel = 0.2 * deltaTime;
-			else yVel = -0.2 * deltaTime;
+			yVel = -0.3 * deltaTime;
 			if (isKeyDown(SDL_SCANCODE_A)) {
 				xVel = -0.1 * deltaTime;
 			}
 			if (isKeyDown(SDL_SCANCODE_D)) {
 				xVel = 0.1 * deltaTime;
 			}
+		}
+
+		if (jumping > 0) jumping -= 0.01 * deltaTime;
+		if (isKeyPressed(SDL_SCANCODE_SPACE)) {
+			if (isTouchingGround(currentWorld, player)) {
+				std::cout << "Touch" << std::endl;
+				jumping = 1;
+				jumpTime = getCurrentTime();
+			}
+		}
+		else if (isKeyDown(SDL_SCANCODE_SPACE)) {
+			if (getCurrentTime() - jumpTime < 250) {
+				jumping += 0.01 * deltaTime;
+			}
+		}
+		if (jumping > 0) {
+			yVel = 0.3 * deltaTime;
 		}
 
 		moveAndResolveCollision(currentWorld, player, xVel, yVel);
