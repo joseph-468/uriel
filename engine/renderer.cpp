@@ -65,25 +65,71 @@ namespace Uriel {
 
 	void drawCursor() {
 		static bool cursorVisible = true;
-		if (customCursor) {
-			const Sprite &sprite = sprites[customCursor - 1];
-			SDL_Rect dst = { 0, 0, sprite.src.w, sprite.src.h };
-			int windowX, windowY;
-			SDL_GetWindowPosition(window, &windowX, &windowY);
-			SDL_GetGlobalMouseState(&dst.x, &dst.y);
-			dst.x -= windowX;
-			dst.y -= windowY;
-			bool prevCursorVisible = cursorVisible;
-			if (dst.x < viewport.x || dst.x >= viewport.x + viewport.w) cursorVisible = true;
-			else if (dst.y < viewport.y || dst.y >= viewport.y + viewport.h) cursorVisible = true;
-			else cursorVisible = false;
-			if (cursorVisible != prevCursorVisible) SDL_ShowCursor(cursorVisible);
-			dst.x -= viewport.x;
-			dst.y -= viewport.y;
-			SDL_RenderCopy(renderer, spriteSheets[sprite.spriteSheetId].texture, &sprite.src, &dst);
-		}
+		if (!customCursor) return;
 
+		int windowX, windowY;
+		int x, y;
+		SDL_GetWindowPosition(window, &windowX, &windowY);
+		SDL_GetGlobalMouseState(&x, &y);
+		x -= windowX;
+		y -= windowY;
+
+		bool prevCursorVisible = cursorVisible;
+		if (x < viewport.x || x >= viewport.x + viewport.w) cursorVisible = true;
+		else if (y < viewport.y || y >= viewport.y + viewport.h) cursorVisible = true;
+		else cursorVisible = false;
+		if (cursorVisible != prevCursorVisible) SDL_ShowCursor(cursorVisible);
+
+		x -= viewport.x;
+		y -= viewport.y;
+		drawSpriteInPixels(customCursor, x, y);
 	}
+
+
+	void drawSpriteInPixels(const Uint16 spriteId, const int x, const int y, const int width, const int height) {
+		if (spriteId == 0) return;
+
+		SDL_Rect src = sprites[spriteId - 1].src;
+		SDL_FRect dst = { x, y, width, height };
+
+		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
+	}
+
+	void drawSpriteInPixels(const Uint16 spriteId, const int x, const int y) {
+		SDL_Rect src = sprites[spriteId - 1].src;
+		drawSpriteInPixels(spriteId, x, y, src.w, src.h);
+	}
+
+	void drawAnimatedSpriteInPixels(AnimatedSprite &animatedSprite, const int x, const int y, const int width, const int height) {
+		if (animatedSprite.getSpriteId() == 0) return;
+		Sprite &sprite = sprites[animatedSprite.getSpriteId()  - 1];
+
+		SDL_Rect src = sprite.src;
+		Uint16 totalOffset = animatedSprite.getCurrentFrameOffset();
+		if (animatedSprite.getPlaying()) {
+			totalOffset += animatedSprite.getCurrentFrame();
+		}
+		src.x += static_cast<int>(totalOffset % sprite.frameCount * src.w);
+		SDL_FRect dst = { x, y, width, height };
+
+		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
+	}
+
+	void drawAnimatedSpriteInPixels(AnimatedSprite &animatedSprite, const int x, const int y) {
+		if (animatedSprite.getSpriteId() == 0) return;
+		Sprite &sprite = sprites[animatedSprite.getSpriteId()  - 1];
+
+		SDL_Rect src = sprite.src;
+		Uint16 totalOffset = animatedSprite.getCurrentFrameOffset();
+		if (animatedSprite.getPlaying()) {
+			totalOffset += animatedSprite.getCurrentFrame();
+		}
+		src.x += static_cast<int>(totalOffset % sprite.frameCount * src.w);
+		SDL_FRect dst = { x, y, src.w, src.h };
+
+		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
+	}
+
 
 	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height) {
 		if (spriteId == 0) return;
@@ -94,15 +140,15 @@ namespace Uriel {
 		float halfHeight = height / 2;
 
 		SDL_Rect src = sprites[spriteId - 1].src;
-		SDL_FRect destination;
+		SDL_FRect dst;
 		// Round is more accurate but if extra performance is needed floor should be used.
-		destination.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX);
-		destination.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY);
+		dst.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX);
+		dst.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY);
 		// We use ceil as it's better to have overlapping sprites than gaps between them.
-		destination.w = ceil(width * cameraScaleX);
-		destination.h = ceil(height * cameraScaleY);
+		dst.w = ceil(width * cameraScaleX);
+		dst.h = ceil(height * cameraScaleY);
 
-		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
 	}
 
 	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height) {
@@ -121,15 +167,15 @@ namespace Uriel {
 		}
 		src.x += static_cast<int>(totalOffset % sprite.frameCount * src.w);
 
-		SDL_FRect destination;
+		SDL_FRect dst;
 		// Round is more accurate but if extra performance is needed floor should be used.
-		destination.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX);
-		destination.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY);
+		dst.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX);
+		dst.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY);
 		// We use ceil as it's better to have overlapping sprites than gaps between them.
-		destination.w = ceil(width * cameraScaleX);
-		destination.h = ceil(height * cameraScaleY);
+		dst.w = ceil(width * cameraScaleX);
+		dst.h = ceil(height * cameraScaleY);
 
-		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &destination, NULL, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
 	}
 
 	// Temporary

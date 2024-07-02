@@ -71,6 +71,8 @@ int main(int argc, char *argv[]) {
 	int prevBlockY = -696969;
 	std::string equippedBlock = "Cobblestone";
 
+	int mouseX, mouseY;
+
 	setCursor(getSpriteId("DefaultCursor"));
 
 	while (tick()) {
@@ -89,6 +91,8 @@ int main(int argc, char *argv[]) {
 			} break;
 			}
 		}
+
+		SDL_GetMouseState(&mouseX, &mouseY);
 
 		if (isKeyPressed(SDL_SCANCODE_F11)) {
 			fullscreen = fullscreen ? false : true;
@@ -109,9 +113,7 @@ int main(int argc, char *argv[]) {
 		if (isKeyPressed(SDL_SCANCODE_F2)) equippedBlock = "Orb";
 
 		if (isMouseDown(MouseButton::LEFT)) {
-			int x, y;
-			SDL_GetMouseState(&x, &y);
-			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(x, y);
+			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(mouseX, mouseY);
 			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
 			int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
 			if (prevBlockX != worldX || prevBlockY != worldY) {
@@ -122,9 +124,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		if (isMousePressed(MouseButton::RIGHT)) {
-			int x, y;
-			SDL_GetMouseState(&x, &y);
-			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(x, y);
+			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(mouseX, mouseY);
 			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
 			int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
 			if (prevBlockX != worldX || prevBlockY != worldY) {

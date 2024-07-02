@@ -399,7 +399,7 @@ namespace Uriel {
 	Uint16 getSpriteId(const std::string &name);
 
 	/// <summary>
-	/// Draws a sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// Draws a sprite to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
 	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
 	/// </summary>
 	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
@@ -409,8 +409,29 @@ namespace Uriel {
 	/// <param name="height">The height of the sprite in game units.</param>
 	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height);
 
+
 	/// <summary>
-	/// Draws an animated sprite to the screen with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// Draws a sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
+	/// The sprite is not automatically centered. The top left of the sprite will be at the x and y coordinates.
+	/// </summary>
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in pixels.</param>
+	/// <param name="y">The y position of the sprite in pixels.</param>
+	void drawSpriteInPixels(const Uint16 spriteId, const int x, const int y);
+
+	/// <summary>
+	/// Draws a sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
+	/// The sprite is not automatically centered. The top left of the sprite will be at the x and y coordinates.
+	/// </summary>
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in pixels.</param>
+	/// <param name="y">The y position of the sprite in pixels.</param>
+	/// <param name="width">The width of the sprite in pixels.</param>
+	/// <param name="height">The height of the sprite in pixels.</param>
+	void drawSpriteInPixels(const Uint16 spriteId, const int x, const int y, const int width, const int height);
+
+	/// <summary>
+	/// Draws an animated sprite to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
 	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
 	/// </summary>
 	/// <param name="animatedSprite">A refernece to the animated sprite that will be drawn.</param>
@@ -419,4 +440,24 @@ namespace Uriel {
 	/// <param name="width">The width of the sprite in game units.</param>
 	/// <param name="height">The height of the sprite in game units.</param>
 	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height);
+
+	/// <summary>
+	/// Draws an animated sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
+	/// The sprite is not automatically centered. The top left of the sprite will be at the x and y coordinates.
+	/// </summary>
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in pixels.</param>
+	/// <param name="y">The y position of the sprite in pixels.</param>
+	void drawAnimatedSpriteInPixels(AnimatedSprite & animatedSprite, const int x, const int y);
+
+	/// <summary>
+	/// Draws an animated sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
+	/// The sprite is not automatically centered. The top left of the sprite will be at the x and y coordinates.
+	/// </summary>
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in pixels.</param>
+	/// <param name="y">The y position of the sprite in pixels.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	void drawAnimatedSpriteInPixels(AnimatedSprite &animatedSprite, const int x, const int y, const int width, const int height);
 }
