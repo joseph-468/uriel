@@ -55,16 +55,15 @@ int main(int argc, char *argv[]) {
 			std::stof(tag.getValue("defaultFrameRate")), tag.getValue("animated") == "true");
 	}
 
-	Uint16 backgroundSprite = getSpriteId("Hills");
+	Uint16 backgroundSprite = getSpriteId("Sky");
 	World currentWorld = generateWorld();
 
 	bool controllingCamera = false;
 	bool fullscreen = false;
 
-	Uint16 playerSprite = getSpriteId("Player");
-	SDL_FRect player = { 0, TILE_SIZE, (TILE_SIZE * 2) - (TILE_SIZE * 2 / 8), (TILE_SIZE * 3) - (TILE_SIZE * 3 / 8) };
-	float xVel = 0;
-	float yVel = 0;
+	MovingEntity player({ 0, TILE_SIZE, (TILE_SIZE * 1.5) - (TILE_SIZE * 1.5 / 8), (TILE_SIZE * 3) - (TILE_SIZE * 3 / 8) }, getSpriteId("Player"));
+	int healthMax = 200;
+	int health = healthMax;
 	float jumping = 0;
 	double jumpTime = 0;
 
@@ -73,9 +72,17 @@ int main(int argc, char *argv[]) {
 	int prevBlockY = -696969;
 	std::string equippedBlock = "Cobblestone";
 
+	float mouseWorldX, mouseWorldY;
 	int mouseX, mouseY;
 
 	setCursor(getSpriteId("DefaultCursor"));
+
+	float batTimer = 0;
+	int batX = 1;
+	int batY = 1;
+	MovingEntity bat({0, TILE_SIZE, 24 * 2, 16 * 2}, getSpriteId("Bat"));
+	bat.sprite.frameRate = 3;
+	bat.sprite.play();
 
 	while (tick()) {
 		// Input
@@ -83,18 +90,29 @@ int main(int argc, char *argv[]) {
 		while (getEvent(event)) {
 			switch (event.type) {
 			case SDL_MOUSEWHEEL: {
-				if (!controllingCamera) break;
-				float distance = event.wheel.y * -100;
-				float widthRatio = camera.width / camera.height;
-				camera.width += distance * widthRatio;
-				camera.height += distance;
+				if (controllingCamera) {
+					float distance = event.wheel.y * -100;
+					float widthRatio = camera.width / camera.height;
+					camera.width += distance * widthRatio;
+					camera.height += distance;
+				}
+				else {
+					health += healthMax / 100 * event.wheel.y * 2;
+					if (health < 0) health = 0;
+					if (health > healthMax) health = healthMax;
+				}
 			} break;
 			case SDL_MOUSEBUTTONDOWN: {
 			} break;
 			}
 		}
 
-		SDL_GetMouseState(&mouseX, &mouseY);
+		{
+			SDL_GetMouseState(&mouseX, &mouseY);
+			SDL_FPoint temp = camera.convertScreenToWorldCoords(mouseX, mouseY);
+			mouseWorldX = temp.x;
+			mouseWorldY = temp.y;
+		}
 
 		if (isKeyPressed(SDL_SCANCODE_F11)) {
 			fullscreen = fullscreen ? false : true;
@@ -115,10 +133,9 @@ int main(int argc, char *argv[]) {
 		if (isKeyPressed(SDL_SCANCODE_F2)) equippedBlock = "Orb";
 
 		if (isMouseDown(MouseButton::LEFT)) {
-			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(mouseX, mouseY);
-			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
-			int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
-			if (prevBlockX != worldX || prevBlockY != worldY) {
+			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldX / TILE_SIZE) - 1;
+			int worldY = floor(currentWorld.height / 2 - mouseWorldY / TILE_SIZE);
+			if (prevButton != MouseButton::LEFT || prevBlockX != worldX || prevBlockY != worldY) {
 				currentWorld.tiles[worldX + worldY * currentWorld.width].typeId = 0;
 				prevButton = MouseButton::LEFT;
 				prevBlockX = worldX;
@@ -126,10 +143,9 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		if (isMousePressed(MouseButton::RIGHT)) {
-			SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(mouseX, mouseY);
-			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldPos.x / TILE_SIZE) - 1;
-			int worldY = floor(currentWorld.height / 2 - mouseWorldPos.y / TILE_SIZE);
-			if (prevBlockX != worldX || prevBlockY != worldY) {
+			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldX / TILE_SIZE) - 1;
+			int worldY = floor(currentWorld.height / 2 - mouseWorldY / TILE_SIZE);
+			if (prevButton != MouseButton::RIGHT || prevBlockX != worldX || prevBlockY != worldY) {
 				currentWorld.tiles[worldX + worldY * currentWorld.width] = Tile(getTileTypeId(equippedBlock), getSpriteId(equippedBlock));
 				currentWorld.tiles[worldX + worldY * currentWorld.width].animatedSprite.play();
 				prevButton = MouseButton::RIGHT;
@@ -138,8 +154,8 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		xVel = 0;
-		yVel = 0;
+		player.xVel = 0;
+		player.yVel = 0;
 		if (controllingCamera) {
 			if (isKeyDown(SDL_SCANCODE_W)) camera.y += 1 * deltaTime;
 			if (isKeyDown(SDL_SCANCODE_A)) camera.x -= 1 * deltaTime;
@@ -147,19 +163,18 @@ int main(int argc, char *argv[]) {
 			if (isKeyDown(SDL_SCANCODE_D)) camera.x += 1 * deltaTime;
 		}
 		else {
-			yVel = -0.3 * deltaTime;
+			player.yVel = -0.3 * deltaTime;
 			if (isKeyDown(SDL_SCANCODE_A)) {
-				xVel = -0.1 * deltaTime;
+				player.xVel = -0.1 * deltaTime;
 			}
 			if (isKeyDown(SDL_SCANCODE_D)) {
-				xVel = 0.1 * deltaTime;
+				player.xVel = 0.1 * deltaTime;
 			}
 		}
 
 		if (jumping > 0) jumping -= 0.01 * deltaTime;
 		if (isKeyPressed(SDL_SCANCODE_SPACE)) {
 			if (isTouchingGround(currentWorld, player)) {
-				std::cout << "Touch" << std::endl;
 				jumping = 1;
 				jumpTime = getCurrentTime();
 			}
@@ -170,22 +185,47 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		if (jumping > 0) {
-			yVel = 0.3 * deltaTime;
+			player.yVel = 0.3 * deltaTime;
 		}
 
-		moveAndResolveCollision(currentWorld, player, xVel, yVel);
+		moveAndResolveCollision(currentWorld, player, player.xVel, player.yVel);
 
 		if (!controllingCamera) {
-			camera.x = player.x;
-			camera.y = player.y;
+			camera.x = player.collisionBox.x;
+			camera.y = player.collisionBox.y;
+		}
+
+
+		// Bat test
+		bat.xVel = batX * deltaTime * 0.2;
+		bat.yVel = batY * deltaTime * 0.2;
+		CollisionResult batCollided = moveAndResolveCollision(currentWorld, bat, bat.xVel, bat.yVel);
+		double currTime = getCurrentTime();
+		if (currTime - batTimer > 500) {
+			batTimer = currTime;
+			batY *= -1;
+		}
+		if (batCollided.collidedY) {
+			batY *= -1;
+			batTimer = currTime;
+		}
+		if (batCollided.collidedX) {
+			batX *= -1;
 		}
 
 		// Rendering 
 		drawSprite(backgroundSprite, camera.x, camera.y, camera.width, camera.height);
-
 		currentWorld.displayTiles(camera);
 
-		drawSprite(playerSprite, player.x, player.y, player.w, player.h);
+		drawSprite(player.sprite.getSpriteId(), player.collisionBox.x, player.collisionBox.y, player.collisionBox.w, player.collisionBox.h);
+		drawAnimatedSprite(bat.sprite, bat.collisionBox.x, bat.collisionBox.y, bat.collisionBox.w, bat.collisionBox.h);
+
+		// Health bar test
+		Color green = { 0, 255, 0, 255 };
+		Color red = { 255, 0, 0, 255 };
+		drawRectangle(red, player.collisionBox.x - TILE_SIZE, player.collisionBox.y + player.collisionBox.h - TILE_SIZE * 1.25, TILE_SIZE * 2, TILE_SIZE / 6);
+		float healthBarSize = health * ((TILE_SIZE * 2) / static_cast<float>(healthMax));
+		drawRectangle(green, player.collisionBox.x - TILE_SIZE, player.collisionBox.y + player.collisionBox.h - TILE_SIZE * 1.25, healthBarSize, TILE_SIZE / 6);
 
 		displayFPS();
 	}

@@ -63,6 +63,32 @@ namespace Uriel {
 		resizeViewport();
 	}
 
+	SDL_FRect getScreenSpaceRect(const float x, const float y, const float width, const float height) {
+		float cameraScaleX = viewport.w / activeCamera->width;
+		float cameraScaleY = viewport.h / activeCamera->height;
+		SDL_FRect dst;
+		// Round is more accurate but if extra performance is needed floor should be used.
+		dst.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX));
+		dst.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - height * cameraScaleY);
+		// We use ceil as it's better to have overlapping sprites than gaps between them.
+		dst.w = ceil(width * cameraScaleX);
+		dst.h = ceil(height * cameraScaleY);
+		return dst;
+	}
+
+	SDL_FRect getScreenSpaceRectCentered(const float x, const float y, const float width, const float height) {
+		float cameraScaleX = viewport.w / activeCamera->width;
+		float cameraScaleY = viewport.h / activeCamera->height;
+		SDL_FRect dst;
+		// Round is more accurate but if extra performance is needed floor should be used.
+		dst.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - (width / 2) * cameraScaleX);
+		dst.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - (height / 2) * cameraScaleY);
+		// We use ceil as it's better to have overlapping sprites than gaps between them.
+		dst.w = ceil(width * cameraScaleX);
+		dst.h = ceil(height * cameraScaleY);
+		return dst;
+	}
+
 	void drawCursor() {
 		static bool cursorVisible = true;
 		if (!customCursor) return;
@@ -133,27 +159,13 @@ namespace Uriel {
 
 	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height) {
 		if (spriteId == 0) return;
-		SDL_Rect screenView = { 0, 0, viewport.w, viewport.h };
-		float cameraScaleX = viewport.w / activeCamera->width;
-		float cameraScaleY = viewport.h / activeCamera->height;
-		float halfWidth = width / 2;
-		float halfHeight = height / 2;
-
 		SDL_Rect src = sprites[spriteId - 1].src;
-		SDL_FRect dst;
-		// Round is more accurate but if extra performance is needed floor should be used.
-		dst.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX);
-		dst.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY);
-		// We use ceil as it's better to have overlapping sprites than gaps between them.
-		dst.w = ceil(width * cameraScaleX);
-		dst.h = ceil(height * cameraScaleY);
-
+		SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
 		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
 	}
 
 	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height) {
 		if (animatedSprite.getSpriteId() == 0) return;
-		SDL_Rect screenView = { 0, 0, viewport.w, viewport.h };
 		float cameraScaleX = viewport.w / activeCamera->width;
 		float cameraScaleY = viewport.h / activeCamera->height;
 		float halfWidth = width / 2;
@@ -167,15 +179,15 @@ namespace Uriel {
 		}
 		src.x += static_cast<int>(totalOffset % sprite.frameCount * src.w);
 
-		SDL_FRect dst;
-		// Round is more accurate but if extra performance is needed floor should be used.
-		dst.x = round(viewport.w / 2 + ((x - activeCamera->x) * cameraScaleX) - halfWidth * cameraScaleX);
-		dst.y = round(viewport.h / 2 - ((y - activeCamera->y) * cameraScaleY) - halfHeight * cameraScaleY);
-		// We use ceil as it's better to have overlapping sprites than gaps between them.
-		dst.w = ceil(width * cameraScaleX);
-		dst.h = ceil(height * cameraScaleY);
+		SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
 
 		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
+	}
+
+	void drawRectangle(const Color color, const float x, const float y, const float width, const float height) {
+		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+		SDL_FRect dst = getScreenSpaceRect(x, y, width, height);
+		SDL_RenderFillRectF(renderer, &dst);
 	}
 
 	// Temporary

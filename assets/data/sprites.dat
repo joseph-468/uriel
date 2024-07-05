@@ -17,5 +17,7 @@ define Sprite {
 <Sprite name="DoorOpenedLeft" x="16" y="0" w="16" h="24">
 <Sprite name="Orb" x="0" y="32" frames="4">
 <Sprite name="Player" x="0" y="0" w="12" h="24" spriteSheet="Entities">
+<Sprite name="Bat" x="32" y="0" w="24" h="16" spriteSheet="Entities" frames="2">
 <Sprite name="Hills" x="0" y="0" w="192" h="108" spriteSheet="Backgrounds">
+<Sprite name="Sky" x="192" y="0" w="192" h="108" spriteSheet="Backgrounds">
 <Sprite name="DefaultCursor" x="0" y="0" w="13" h="13" spriteSheet="Misc">

@@ -97,7 +97,6 @@ namespace Uriel {
 			SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 		renderer = SDL_CreateRenderer(window, -1, 0);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 		running = true;
 
@@ -164,6 +163,7 @@ namespace Uriel {
 		drawCursor();
 
 		SDL_RenderPresent(renderer);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
 		previousTime = currentTime;

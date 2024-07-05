@@ -44,6 +44,16 @@ namespace Uriel {
 	//************************************************************//
 
 	/// <summary>
+	/// Simple RGBA color.
+	/// </summary>
+	struct Color {
+		Uint8 r;
+		Uint8 g;
+		Uint8 b;
+		Uint8 a;
+	};
+
+	/// <summary>
 	/// Basic templated rectangle struct.
 	/// </summary>
 	/// <typeparam name="T">The type the rect will use. float, double, int, unsigned int, etc.</typeparam>
@@ -460,4 +470,14 @@ namespace Uriel {
 	/// <param name="width">The width of the sprite in game units.</param>
 	/// <param name="height">The height of the sprite in game units.</param>
 	void drawAnimatedSpriteInPixels(AnimatedSprite &animatedSprite, const int x, const int y, const int width, const int height);
+
+	/// <summary>
+	/// Draw a filled solid color rectangle to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// </summary>
+	/// <param name="color">The color of the rectangle.</param>
+	/// <param name="x">The x position of the rectangle in game units.</param>
+	/// <param name="y">The y position of the rectangle in game units.</param>
+	/// <param name="width">The width of the rectangle in game units.</param>
+	/// <param name="height">The height of the rectangle in game units.</param>
+	void drawRectangle(const Color color, const float x, const float y, const float width, const float height);
 }
