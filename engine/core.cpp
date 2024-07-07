@@ -5,8 +5,8 @@
 #include "internal.h"
 
 namespace Uriel {
-	extern constexpr const size_t MAX_EVENTS = 256;
-	extern constexpr const SDL_Event NULL_EVENT = { .type = 0 };
+	constexpr size_t MAX_EVENTS = 256;
+	constexpr SDL_Event NULL_EVENT = { .type = 0 };
 
 	bool running = false;
 	Uint64 initTime = 0;
@@ -131,34 +131,38 @@ namespace Uriel {
 		eventQueue.fill(NULL_EVENT);
 		while (SDL_PollEvent(&eventQueue[i++])) {}
 		currentEvent = 0;
-		
+	
 		SDL_Event event;
 		for (size_t i = 0; i < MAX_EVENTS; i++) {
 			event = eventQueue[i];
-			if (event.type == 0) break;
-
-			else if (event.type == SDL_QUIT) {
-				quit();
-			}
-			else if (event.type == SDL_WINDOWEVENT) {
-				if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-					updateWindowSize(event.window.data1, event.window.data2);
-					resizeViewport();
-				}
-			}
-			else if (event.type == SDL_KEYDOWN) {
-				currentKeyboardState[event.key.keysym.scancode] = SDL_PRESSED;
-			}
-			else if (event.type == SDL_KEYUP) {
-				currentKeyboardState[event.key.keysym.scancode] = SDL_RELEASED;
-			}
-			else if (event.type == SDL_MOUSEBUTTONDOWN) {
-				currentMouseState[event.button.button] = SDL_PRESSED;
-			}
-			else if (event.type == SDL_MOUSEBUTTONUP) {
-				currentMouseState[event.button.button] = SDL_RELEASED;
+			switch (event.type) {
+				case SDL_POLLSENTINEL: {
+					goto endloop;
+				} break;
+				case SDL_QUIT: {
+					quit();
+				} break;
+				case SDL_WINDOWEVENT: {
+					if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+						updateWindowSize(event.window.data1, event.window.data2);
+						resizeViewport();
+					}
+				} break;
+				case SDL_KEYDOWN: {
+					currentKeyboardState[event.key.keysym.scancode] = SDL_PRESSED;
+				} break;
+				case SDL_KEYUP: {
+					currentKeyboardState[event.key.keysym.scancode] = SDL_RELEASED;
+				} break;
+				case SDL_MOUSEBUTTONDOWN: {
+					currentMouseState[event.button.button] = SDL_PRESSED;
+				} break;
+				case SDL_MOUSEBUTTONUP: {
+					currentMouseState[event.button.button] = SDL_RELEASED;
+				} break;
 			}
 		}
+		endloop:
 
 		drawCursor();
 
