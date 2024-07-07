@@ -8,12 +8,6 @@
 #include <iostream>
 
 namespace Uriel {
-	/// <summary>
-	/// Temporary.
-	/// </summary>
-	/// <param name="text"></param>
-	void renderText(const char *text);
-
 	//***************************************************************************************************//
 	//     ____   ____  _       _______     _____       _       ______   _____     ________   ______     // 
 	//    |_  _| |_  _|/ \     |_   __ \   |_   _|     / \     |_   _ \ |_   _|   |_   __  |.' ____ \    //
@@ -419,7 +413,6 @@ namespace Uriel {
 	/// <param name="height">The height of the sprite in game units.</param>
 	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height);
 
-
 	/// <summary>
 	/// Draws a sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
 	/// The sprite is not automatically centered. The top left of the sprite will be at the x and y coordinates.
@@ -480,4 +473,26 @@ namespace Uriel {
 	/// <param name="width">The width of the rectangle in game units.</param>
 	/// <param name="height">The height of the rectangle in game units.</param>
 	void drawRectangle(const Color color, const float x, const float y, const float width, const float height);
+
+	/// <summary>
+	/// Loads a TTF or OTF from a filepath to be used by text related functions.
+	/// </summary>
+	/// <param name="filepath">The filepath of the font.</param>
+	/// <returns>The id of the font.</returns>
+	Uint16 loadFont(const std::string &filepath);
+
+	/// <summary>
+	/// Sets which font will be used by text related functions. 
+	/// </summary>
+	/// <param name="fontId">The id of the font to be used.</param>
+	void setActiveFont(const Uint16 fontId);
+
+	/// <summary>
+	/// Renders text using the current font in pixel space.
+	/// </summary>
+	/// <param name="text">Text to be rendered.</param>
+	/// <param name="fontSize">The width and height of the font in pixels.</param>
+	/// <param name="color">The RGB color of the font.</param>
+	void renderText(const std::string &text, const int fontSize, const Color color);
+
 }

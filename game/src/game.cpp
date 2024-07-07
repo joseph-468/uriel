@@ -36,6 +36,16 @@ CollisionResult moveAndResolveCollision(World &world, Entity &target, float &xVe
 	return { collidedX, collidedY };
 }
 
+bool isCollidingWithEntity(World &world, Entity &target, Entity &otherTarget) {
+	SDL_FRect collisionBox1 = target.collisionBox;
+	collisionBox1.x -= target.collisionBox.w / 2;
+	collisionBox1.y -= target.collisionBox.h / 2;
+	SDL_FRect collisionBox2 = otherTarget.collisionBox;
+	collisionBox2.x -= otherTarget.collisionBox.w / 2;
+	collisionBox2.y -= otherTarget.collisionBox.h / 2;
+	return SDL_HasIntersectionF(&collisionBox1, &collisionBox2);
+}
+
 bool isTouchingGround(World &world, const Entity &target) {
 	SDL_FRect collisionBox = target.collisionBox;
 	collisionBox.y -= collisionBox.h / 2 + 4;

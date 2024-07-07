@@ -189,17 +189,4 @@ namespace Uriel {
 		SDL_FRect dst = getScreenSpaceRect(x, y, width, height);
 		SDL_RenderFillRectF(renderer, &dst);
 	}
-
-	// Temporary
-	void renderText(const char *text) {
-		static TTF_Font* font = TTF_OpenFont("assets/fonts/bittypix.ttf", 24);
-		static SDL_Color fontColor = { 128, 128, 128 };
-		SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, fontColor);
-		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-		SDL_Rect src = { 0, 0, 0, 0 };
-		SDL_QueryTexture(textTexture, NULL, NULL, &src.w, &src.h);
-		SDL_RenderCopy(renderer, textTexture, &src, &src);
-		SDL_FreeSurface(textSurface);
-		SDL_DestroyTexture(textTexture);
-	}
 }

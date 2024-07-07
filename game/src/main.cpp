@@ -12,8 +12,9 @@ using namespace Uriel;
 void displayFPS() {
 	std::string text = std::to_string(getFPS());
 	text.append(" FPS");
-	renderText(text.c_str());
+	renderText(text.c_str(), 24, { 128, 255, 128 });
 }
+
 
 int main(int argc, char *argv[]) {
 	init(1280, 720, "Uriel Test");
@@ -65,7 +66,8 @@ int main(int argc, char *argv[]) {
 	int healthMax = 200;
 	int health = healthMax;
 	float jumping = 0;
-	double jumpTime = 0;
+	float playerLastHit = 0;
+	float jumpTime = 0;
 
 	int prevButton = -69;
 	int prevBlockX = -6969;
@@ -83,6 +85,11 @@ int main(int argc, char *argv[]) {
 	MovingEntity bat({0, TILE_SIZE, 24 * 2, 16 * 2}, getSpriteId("Bat"));
 	bat.sprite.frameRate = 3;
 	bat.sprite.play();
+
+
+	// font test
+	Uint16 font1 = loadFont("assets/fonts/bittypix.ttf");
+	Uint16 font2 = loadFont("assets/fonts/ComicMono.ttf");
 
 	while (tick()) {
 		// Input
@@ -130,7 +137,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (isKeyPressed(SDL_SCANCODE_F1)) equippedBlock = "Cobblestone";
-		if (isKeyPressed(SDL_SCANCODE_F2)) equippedBlock = "Orb";
+		if (isKeyPressed(SDL_SCANCODE_F2)) equippedBlock = "Dirt";
 
 		if (isMouseDown(MouseButton::LEFT)) {
 			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldX / TILE_SIZE) - 1;
@@ -200,7 +207,7 @@ int main(int argc, char *argv[]) {
 		bat.xVel = batX * deltaTime * 0.2;
 		bat.yVel = batY * deltaTime * 0.2;
 		CollisionResult batCollided = moveAndResolveCollision(currentWorld, bat, bat.xVel, bat.yVel);
-		double currTime = getCurrentTime();
+		float currTime = getCurrentTime();
 		if (currTime - batTimer > 500) {
 			batTimer = currTime;
 			batY *= -1;
@@ -213,16 +220,25 @@ int main(int argc, char *argv[]) {
 			batX *= -1;
 		}
 
+		bool collided = isCollidingWithEntity(currentWorld, player, bat);
+		if (collided && getCurrentTime() - playerLastHit > 200) {
+			health -= 10;
+			if (health < 0) health = 0;
+			playerLastHit = getCurrentTime();
+		}
+
 		// Rendering 
+		Color green = { 0, 255, 0, 255 };
+		Color red = { 255, 0, 0, 255 };
 		drawSprite(backgroundSprite, camera.x, camera.y, camera.width, camera.height);
 		currentWorld.displayTiles(camera);
 
+		//drawRectangle(col, player.collisionBox.x - player.collisionBox.w / 2, player.collisionBox.y - player.collisionBox.h / 2, player.collisionBox.w, player.collisionBox.h);
 		drawSprite(player.sprite.getSpriteId(), player.collisionBox.x, player.collisionBox.y, player.collisionBox.w, player.collisionBox.h);
+		//drawRectangle(col, bat.collisionBox.x - bat.collisionBox.w / 2, bat.collisionBox.y - bat.collisionBox.h / 2, bat.collisionBox.w, bat.collisionBox.h);
 		drawAnimatedSprite(bat.sprite, bat.collisionBox.x, bat.collisionBox.y, bat.collisionBox.w, bat.collisionBox.h);
 
 		// Health bar test
-		Color green = { 0, 255, 0, 255 };
-		Color red = { 255, 0, 0, 255 };
 		drawRectangle(red, player.collisionBox.x - TILE_SIZE, player.collisionBox.y + player.collisionBox.h - TILE_SIZE * 1.25, TILE_SIZE * 2, TILE_SIZE / 6);
 		float healthBarSize = health * ((TILE_SIZE * 2) / static_cast<float>(healthMax));
 		drawRectangle(green, player.collisionBox.x - TILE_SIZE, player.collisionBox.y + player.collisionBox.h - TILE_SIZE * 1.25, healthBarSize, TILE_SIZE / 6);

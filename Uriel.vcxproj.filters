@@ -42,6 +42,9 @@
     <ClCompile Include="game\src\external_data.cpp">
       <Filter>game\src</Filter>
     </ClCompile>
+    <ClCompile Include="engine\font.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\uriel.h">

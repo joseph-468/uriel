@@ -29,4 +29,5 @@ public:
 
 
 CollisionResult moveAndResolveCollision(World &world, Entity &target, float &xVel, float &yVel);
+bool isCollidingWithEntity(World &world, Entity &target, Entity &otherTarget);
 bool isTouchingGround(World &world, const Entity &entity);
