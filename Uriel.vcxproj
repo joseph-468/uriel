@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\font.cpp" />
+    <ClCompile Include="engine\text_renderer.cpp" />
     <ClCompile Include="engine\input.cpp" />
     <ClCompile Include="engine\renderer.cpp" />
     <ClCompile Include="engine\sprite.cpp" />
