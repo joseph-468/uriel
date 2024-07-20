@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
+#include <random>
 
 #include "../include/game.h"
 #include "../include/world.h"
@@ -51,13 +52,50 @@ void World::displayTiles(const Camera &camera) {
 
 World generateWorld() {
 	std::vector<Tile> tiles;
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> oreVeinChance(0, 100); 
+    std::uniform_int_distribution<std::mt19937::result_type> oreTypeChance(0, 1); 
+	std::uniform_int_distribution<std::mt19937::result_type> oreChance(0, 8);
+
+	tiles.resize(64 * 256);
 	for (int y = 0; y < 64; y++) {
 		for (int x = 0; x < 256; x++) {
 			std::string tileType;
 			if (y == 33) tileType = "Grass";
 			if (y > 33) tileType = "Dirt";
 			if (y > 39) tileType = "Cobblestone";
-			tiles.push_back(Tile(getTileTypeId(tileType), getSpriteId(tileType)));
+			tiles[y * 256 + x] = Tile(getTileTypeId(tileType), getSpriteId(tileType));
+		}
+	}
+
+	for (int y = 45; y < 64; y++) {
+		for (int x = 0; x < 256; x++) {
+			if (!oreVeinChance(rng)) {
+				std::string oreType = oreTypeChance(rng) ? "CopperOre" : "IronOre";
+				tiles[y * 256 + x] = Tile(getTileTypeId(oreType), getSpriteId(oreType));
+				for (int y2 = -5; y2 < 5; y2++) {
+					for (int x2 = -5; x2 < 5; x2++) {
+						if (!oreChance(rng)) {
+							for (int i = 0; i < oreChance(rng) * 2; i++) {
+								int offset = oreChance(rng);
+								int posX = std::clamp(x + 5 - offset + x2, 1, 254);
+								int posY = std::clamp(y + 5 - offset + y2, 1, 62);
+								if (tiles[posY * 256 + posX - 1].typeId == getTileTypeId(oreType) ||
+								tiles[posY * 256 + posX + 1].typeId == getTileTypeId(oreType) ||
+								tiles[(posY - 1) * 256 + posX].typeId == getTileTypeId(oreType) ||
+								tiles[(posY + 1) * 256 + posX].typeId == getTileTypeId(oreType) || 
+								tiles[(posY - 1) * 256 + posX - 1].typeId == getTileTypeId(oreType) ||
+								tiles[(posY - 1) * 256 + posX + 1].typeId == getTileTypeId(oreType) ||
+								tiles[(posY - 1) * 256 + posX + 1].typeId == getTileTypeId(oreType) ||
+								tiles[(posY + 1) * 256 + posX - 1].typeId == getTileTypeId(oreType)) {
+									tiles[posY * 256 + posX] = Tile(getTileTypeId(oreType), getSpriteId(oreType));
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 	

@@ -12,7 +12,7 @@ using namespace Uriel;
 void displayFPS() {
 	std::string text = std::to_string(getFPS());
 	text.append(" FPS");
-	renderText(text.c_str(), 24, { 128, 255, 128 });
+	renderText(text.c_str(), 0, 0, 24, { 128, 255, 128 });
 }
 
 
@@ -63,10 +63,10 @@ int main(int argc, char *argv[]) {
 	bool fullscreen = false;
 
 	MovingEntity player({ 0, TILE_SIZE, (TILE_SIZE * 1.5) - (TILE_SIZE * 1.5 / 8), (TILE_SIZE * 3) - (TILE_SIZE * 3 / 8) }, getSpriteId("Player"));
-	int healthMax = 200;
-	int health = healthMax;
+	bool attacking = false;
+	float rot = 0;
+	bool down = true;
 	float jumping = 0;
-	float playerLastHit = 0;
 	float jumpTime = 0;
 
 	int prevButton = -69;
@@ -80,18 +80,29 @@ int main(int argc, char *argv[]) {
 	setCursor(getSpriteId("DefaultCursor"));
 
 	float batTimer = 0;
+	float batTimerX = -1500;
 	int batX = 1;
 	int batY = 1;
+	double healthMax = 200;
+	double health = healthMax;
 	MovingEntity bat({0, TILE_SIZE, 24 * 2, 16 * 2}, getSpriteId("Bat"));
 	bat.sprite.frameRate = 3;
 	bat.sprite.play();
-
 
 	// font test
 	Uint16 font1 = loadFont("assets/fonts/bittypix.ttf");
 	Uint16 font2 = loadFont("assets/fonts/ComicMono.ttf");
 
+	Mix_Music *music = Mix_LoadMUS("assets/sounds/day.mp3");
+	Mix_PlayMusic(music, -1);
+
+	// Console
+	std::string consoleText;
+
 	while (tick()) {
+		// Might make into a uriel function.
+		float currentTime = getCurrentTime();
+
 		// Input
 		SDL_Event event;
 		while (getEvent(event)) {
@@ -109,17 +120,18 @@ int main(int argc, char *argv[]) {
 					if (health > healthMax) health = healthMax;
 				}
 			} break;
-			case SDL_MOUSEBUTTONDOWN: {
+			case SDL_KEYDOWN: {
+				if (controllingCamera) {
+					consoleText += event.key.keysym.sym;
+				}
 			} break;
 			}
 		}
 
-		{
-			SDL_GetMouseState(&mouseX, &mouseY);
-			SDL_FPoint temp = camera.convertScreenToWorldCoords(mouseX, mouseY);
-			mouseWorldX = temp.x;
-			mouseWorldY = temp.y;
-		}
+		SDL_GetMouseState(&mouseX, &mouseY);
+		SDL_FPoint mouseWorldPos = camera.convertScreenToWorldCoords(mouseX, mouseY);
+		mouseWorldX = mouseWorldPos.x;
+		mouseWorldY = mouseWorldPos.y;
 
 		if (isKeyPressed(SDL_SCANCODE_F11)) {
 			fullscreen = fullscreen ? false : true;
@@ -136,33 +148,66 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if (isKeyPressed(SDL_SCANCODE_F1)) equippedBlock = "Cobblestone";
-		if (isKeyPressed(SDL_SCANCODE_F2)) equippedBlock = "Dirt";
+		if (isKeyPressed(SDL_SCANCODE_F1)) equippedBlock = "Log";
+		if (isKeyPressed(SDL_SCANCODE_F2)) equippedBlock = "Leaves";
 
 		if (isMouseDown(MouseButton::LEFT)) {
-			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldX / TILE_SIZE) - 1;
+			attacking = true;
+			int worldX = floor(currentWorld.width / 2 + mouseWorldX / TILE_SIZE);
 			int worldY = floor(currentWorld.height / 2 - mouseWorldY / TILE_SIZE);
-			if (prevButton != MouseButton::LEFT || prevBlockX != worldX || prevBlockY != worldY) {
-				currentWorld.tiles[worldX + worldY * currentWorld.width].typeId = 0;
-				prevButton = MouseButton::LEFT;
-				prevBlockX = worldX;
-				prevBlockY = worldY;
+			if (worldX >= 0 && worldX < currentWorld.width && worldY >= 0 && worldY < currentWorld.height) {
+				if (prevButton != MouseButton::LEFT || prevBlockX != worldX || prevBlockY != worldY) {
+					currentWorld.tiles[worldX + worldY * currentWorld.width].typeId = 0;
+					prevButton = MouseButton::LEFT;
+					prevBlockX = worldX;
+					prevBlockY = worldY;
+				}
 			}
 		}
-		if (isMousePressed(MouseButton::RIGHT)) {
-			int worldX = currentWorld.width - floor(currentWorld.width / 2 - mouseWorldX / TILE_SIZE) - 1;
+		if (isMouseReleased(MouseButton::LEFT)) {
+			attacking = false;
+		}
+		if (isMouseDown(MouseButton::RIGHT)) {
+			int worldX = floor(currentWorld.width / 2 + mouseWorldX / TILE_SIZE);
 			int worldY = floor(currentWorld.height / 2 - mouseWorldY / TILE_SIZE);
-			if (prevButton != MouseButton::RIGHT || prevBlockX != worldX || prevBlockY != worldY) {
-				currentWorld.tiles[worldX + worldY * currentWorld.width] = Tile(getTileTypeId(equippedBlock), getSpriteId(equippedBlock));
-				currentWorld.tiles[worldX + worldY * currentWorld.width].animatedSprite.play();
-				prevButton = MouseButton::RIGHT;
-				prevBlockX = worldX;
-				prevBlockY = worldY;
+			if (worldX >= 0 && worldX < currentWorld.width && worldY >= 0 && worldY < currentWorld.height) {
+				if (prevButton != MouseButton::RIGHT || prevBlockX != worldX || prevBlockY != worldY) {
+					currentWorld.tiles[worldX + worldY * currentWorld.width] = Tile(getTileTypeId(equippedBlock), getSpriteId(equippedBlock));
+					currentWorld.tiles[worldX + worldY * currentWorld.width].animatedSprite.play();
+					prevButton = MouseButton::RIGHT;
+					prevBlockX = worldX;
+					prevBlockY = worldY;
+				}
 			}
+		}
+
+		if (attacking) {
+			// Rotating version
+			rot += deltaTime;
+
+			// "realistic" version
+			/*
+			if (down) {
+				rot += deltaTime / 4;
+			}
+			else {
+				rot -= deltaTime / 4;
+			}
+			if (rot >= 90 && down) {
+				down = false;
+			}
+			else if (rot <= -45 && !down) {
+				down = true;
+			}
+			*/
+		}
+		else {
+			rot = 0;
 		}
 
 		player.xVel = 0;
-		player.yVel = 0;
+		player.yVel = -0.3 * deltaTime;
+
 		if (controllingCamera) {
 			if (isKeyDown(SDL_SCANCODE_W)) camera.y += 1 * deltaTime;
 			if (isKeyDown(SDL_SCANCODE_A)) camera.x -= 1 * deltaTime;
@@ -170,7 +215,6 @@ int main(int argc, char *argv[]) {
 			if (isKeyDown(SDL_SCANCODE_D)) camera.x += 1 * deltaTime;
 		}
 		else {
-			player.yVel = -0.3 * deltaTime;
 			if (isKeyDown(SDL_SCANCODE_A)) {
 				player.xVel = -0.1 * deltaTime;
 			}
@@ -183,11 +227,11 @@ int main(int argc, char *argv[]) {
 		if (isKeyPressed(SDL_SCANCODE_SPACE)) {
 			if (isTouchingGround(currentWorld, player)) {
 				jumping = 1;
-				jumpTime = getCurrentTime();
+				jumpTime = currentTime;
 			}
 		}
 		else if (isKeyDown(SDL_SCANCODE_SPACE)) {
-			if (getCurrentTime() - jumpTime < 250) {
+			if (currentTime - jumpTime < 250) {
 				jumping += 0.01 * deltaTime;
 			}
 		}
@@ -207,24 +251,26 @@ int main(int argc, char *argv[]) {
 		bat.xVel = batX * deltaTime * 0.2;
 		bat.yVel = batY * deltaTime * 0.2;
 		CollisionResult batCollided = moveAndResolveCollision(currentWorld, bat, bat.xVel, bat.yVel);
-		float currTime = getCurrentTime();
-		if (currTime - batTimer > 500) {
-			batTimer = currTime;
+		if (currentTime - batTimer > 500) {
+			batTimer = currentTime;
 			batY *= -1;
 		}
 		if (batCollided.collidedY) {
 			batY *= -1;
-			batTimer = currTime;
+			batTimer = currentTime;
 		}
 		if (batCollided.collidedX) {
 			batX *= -1;
 		}
+		if (currentTime - batTimerX > 4000) {
+			batX *= -1;
+			batTimerX = currentTime;
+		}
 
 		bool collided = isCollidingWithEntity(currentWorld, player, bat);
-		if (collided && getCurrentTime() - playerLastHit > 200) {
-			health -= 10;
+		if (collided && attacking) {
+			health -= 0.1 * deltaTime;
 			if (health < 0) health = 0;
-			playerLastHit = getCurrentTime();
 		}
 
 		// Rendering 
@@ -233,15 +279,25 @@ int main(int argc, char *argv[]) {
 		drawSprite(backgroundSprite, camera.x, camera.y, camera.width, camera.height);
 		currentWorld.displayTiles(camera);
 
-		//drawRectangle(col, player.collisionBox.x - player.collisionBox.w / 2, player.collisionBox.y - player.collisionBox.h / 2, player.collisionBox.w, player.collisionBox.h);
 		drawSprite(player.sprite.getSpriteId(), player.collisionBox.x, player.collisionBox.y, player.collisionBox.w, player.collisionBox.h);
-		//drawRectangle(col, bat.collisionBox.x - bat.collisionBox.w / 2, bat.collisionBox.y - bat.collisionBox.h / 2, bat.collisionBox.w, bat.collisionBox.h);
+		drawSprite(getSpriteId("Pickaxe"), player.collisionBox.x + 12, player.collisionBox.y + 16, 48, 48, rot);
+		drawRectangle(green, player.collisionBox.x - player.collisionBox.w / 2, player.collisionBox.y - player.collisionBox.h / 2, player.collisionBox.w, player.collisionBox.h, 1);
+
 		drawAnimatedSprite(bat.sprite, bat.collisionBox.x, bat.collisionBox.y, bat.collisionBox.w, bat.collisionBox.h);
+		drawRectangle(green, bat.collisionBox.x - bat.collisionBox.w / 2, bat.collisionBox.y - bat.collisionBox.h / 2, bat.collisionBox.w, bat.collisionBox.h, 1);
 
 		// Health bar test
-		drawRectangle(red, player.collisionBox.x - TILE_SIZE, player.collisionBox.y + player.collisionBox.h - TILE_SIZE * 1.25, TILE_SIZE * 2, TILE_SIZE / 6);
 		float healthBarSize = health * ((TILE_SIZE * 2) / static_cast<float>(healthMax));
-		drawRectangle(green, player.collisionBox.x - TILE_SIZE, player.collisionBox.y + player.collisionBox.h - TILE_SIZE * 1.25, healthBarSize, TILE_SIZE / 6);
+		drawFilledRectangle(red, bat.collisionBox.x - TILE_SIZE, bat.collisionBox.y + bat.collisionBox.h / 2 + 4, TILE_SIZE * 2, TILE_SIZE / 6);
+		drawFilledRectangle(green, bat.collisionBox.x - TILE_SIZE, bat.collisionBox.y + bat.collisionBox.h / 2 + 4, healthBarSize, TILE_SIZE / 6);
+
+
+		// Console test 
+		Color black = { 0, 0, 0 };
+		Color translucentGrey = { 128, 128, 128, 192 };
+		drawFilledRectangleInPixels(translucentGrey, 0, 24, 720, 28);
+		renderText(">", 2, 26, 24, black);
+		renderText(consoleText, 26, 26, 24, black);
 
 		displayFPS();
 	}
