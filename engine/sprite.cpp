@@ -88,7 +88,6 @@ namespace Uriel {
 		startTime = getCurrentTime();
 	}
 
-	// Probably shouldn't have to pass in frameCount...
 	void AnimatedSprite::pause() {
 		if (status == AnimationStatus::PAUSED) return;
 		Uint16 frameCount = sprites[spriteId - 1].frameCount;

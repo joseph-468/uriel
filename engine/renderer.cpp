@@ -157,11 +157,13 @@ namespace Uriel {
 	}
 
 
-	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height) {
+	// Rotation implementation is only temporary.
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const float rotation) {
 		if (spriteId == 0) return;
 		SDL_Rect src = sprites[spriteId - 1].src;
 		SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
-		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
+		SDL_FPoint pivot = { dst.w / 2, dst.h };
+		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, rotation, &pivot, SDL_FLIP_NONE);
 	}
 
 	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height) {
@@ -184,9 +186,54 @@ namespace Uriel {
 		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
 	}
 
-	void drawRectangle(const Color color, const float x, const float y, const float width, const float height) {
+	void drawFilledRectangle(const Color color, const float x, const float y, const float width, const float height) {
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 		SDL_FRect dst = getScreenSpaceRect(x, y, width, height);
+		SDL_RenderFillRectF(renderer, &dst);
+	}
+
+	void drawFilledRectangleInPixels(const Color color, const int x, const int y, const int width, const int height) {
+		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+		SDL_FRect dst = { x, y, width, height };
+		SDL_RenderFillRectF(renderer, &dst);
+	}
+
+	void drawRectangle(const Color color, const float x, const float y, const float width, const float height, const float thickness) {
+		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+		SDL_FRect rect = getScreenSpaceRect(x, y, width, height);
+		SDL_FRect dst = getScreenSpaceRect(x, y, width, height);
+		float cameraScaleX = viewport.w / activeCamera->width;
+		float cameraScaleY = viewport.h / activeCamera->height;
+		float dstThickness = round(thickness * cameraScaleY);
+
+		dst.h = dstThickness;
+		SDL_RenderFillRectF(renderer, &dst);
+		dst.y += rect.h - dstThickness;
+		SDL_RenderFillRectF(renderer, &dst);
+		dstThickness = round(thickness * cameraScaleX);
+		dst.w = dstThickness;
+		dst.h = rect.h - dstThickness * 2;
+		dst.y = rect.y + dstThickness;
+		SDL_RenderFillRectF(renderer, &dst);
+		dst.x += rect.w - dstThickness;
+		SDL_RenderFillRectF(renderer, &dst);
+	}
+
+	void drawRectangleInPixels(const Color color, const int x, const int y, const int width, const int height, const int thickness) {
+		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+		SDL_FRect rect = { x, y, width, height };
+		SDL_FRect dst = { x, y, width, height };
+		float dstThickness = round(thickness);
+
+		dst.h = dstThickness;
+		SDL_RenderFillRectF(renderer, &dst);
+		dst.y += rect.h - dstThickness;
+		SDL_RenderFillRectF(renderer, &dst);
+		dst.w = dstThickness;
+		dst.h = rect.h - dstThickness * 2;
+		dst.y = rect.y + dstThickness;
+		SDL_RenderFillRectF(renderer, &dst);
+		dst.x += rect.w - dstThickness;
 		SDL_RenderFillRectF(renderer, &dst);
 	}
 }

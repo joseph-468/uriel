@@ -411,7 +411,7 @@ namespace Uriel {
 	/// <param name="y">The y position of the sprite in game units.</param>
 	/// <param name="width">The width of the sprite in game units.</param>
 	/// <param name="height">The height of the sprite in game units.</param>
-	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height);
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const float rotation = 0);
 
 	/// <summary>
 	/// Draws a sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
@@ -472,7 +472,37 @@ namespace Uriel {
 	/// <param name="y">The y position of the rectangle in game units.</param>
 	/// <param name="width">The width of the rectangle in game units.</param>
 	/// <param name="height">The height of the rectangle in game units.</param>
-	void drawRectangle(const Color color, const float x, const float y, const float width, const float height);
+	void drawFilledRectangle(const Color color, const float x, const float y, const float width, const float height);
+
+	/// <summary>
+	/// Draw a filled solid color rectangle to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen.
+	/// </summary>
+	/// <param name="color">The color of the rectangle.</param>
+	/// <param name="x">The x position of the rectangle in pixels.</param>
+	/// <param name="y">The y position of the rectangle in pixels.</param>
+	/// <param name="width">The width of the rectangle in pixels.</param>
+	/// <param name="height">The height of the rectangle in pixels.</param>
+	void drawFilledRectangleInPixels(const Color color, const int x, const int y, const int width, const int height);
+
+	/// <summary>
+	/// Draw the outline of a colored rectangle to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// </summary>
+	/// <param name="color">The color of the rectangle.</param>
+	/// <param name="x">The x position of the rectangle in game units.</param>
+	/// <param name="y">The y position of the rectangle in game units.</param>
+	/// <param name="width">The width of the rectangle in game units.</param>
+	/// <param name="height">The height of the rectangle in game units.</param>
+	void drawRectangle(const Color color, const float x, const float y, const float width, const float height, const float thickness = 1);
+
+	/// <summary>
+	/// Draw the outline of a colored rectangle to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen.
+	/// </summary>
+	/// <param name="color">The color of the rectangle.</param>
+	/// <param name="x">The x position of the rectangle in pixels.</param>
+	/// <param name="y">The y position of the rectangle in pixels.</param>
+	/// <param name="width">The width of the rectangle in pixels.</param>
+	/// <param name="height">The height of the rectangle in pixels.</param>
+	void drawRectangleInPixels(const Color color, const int x, const int y, const int width, const int height, const int thickness = 1);
 
 	/// <summary>
 	/// Loads a TTF or OTF from a filepath to be used by text related functions.
@@ -491,8 +521,10 @@ namespace Uriel {
 	/// Renders text using the current font in pixel space.
 	/// </summary>
 	/// <param name="text">Text to be rendered.</param>
+	/// <param name="x">The x position of the start of the text in pixels.</param>
+	/// <param name="y">The y position of the top of the text pixels.</param>
 	/// <param name="fontSize">The width and height of the font in pixels.</param>
 	/// <param name="color">The RGB color of the font.</param>
-	void renderText(const std::string &text, const int fontSize, const Color color);
+	void renderText(const std::string &text, const int x, const int y, const int fontSize, const Color color);
 
 }
