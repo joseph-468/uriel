@@ -12,6 +12,10 @@ define Sprite {
 <Sprite name="Cobblestone" x="8" y="0">
 <Sprite name="Grass" x="0" y="8">
 <Sprite name="Dirt" x="8" y="8">
+<Sprite name="CopperOre" x="0" y="16">
+<Sprite name="IronOre" x="8" y="16">
+<Sprite name="Log" x="0" y="24">
+<Sprite name="Leaves" x="8" y="24">
 <Sprite name="DoorClosed" x="32" y="0" w="8" h="24">
 <Sprite name="DoorOpenedRight" x="16" y="0" w="16" h="24">
 <Sprite name="DoorOpenedLeft" x="16" y="0" w="16" h="24">
@@ -21,3 +25,4 @@ define Sprite {
 <Sprite name="Hills" x="0" y="0" w="192" h="108" spriteSheet="Backgrounds">
 <Sprite name="Sky" x="192" y="0" w="192" h="108" spriteSheet="Backgrounds">
 <Sprite name="DefaultCursor" x="0" y="0" w="13" h="13" spriteSheet="Misc">
+<Sprite name="Pickaxe" x="16" y="0" w="32" h="32" spriteSheet="Misc">
