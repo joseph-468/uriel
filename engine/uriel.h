@@ -521,7 +521,7 @@ namespace Uriel {
 	/// Renders text using the current font in pixel space.
 	/// </summary>
 	/// <param name="text">Text to be rendered.</param>
-	/// <param name="x">The x position of the start of the text in pixels.</param>
+	/// <param name="x">The x position of the left of the text in pixels.</param>
 	/// <param name="y">The y position of the top of the text pixels.</param>
 	/// <param name="fontSize">The width and height of the font in pixels.</param>
 	/// <param name="color">The RGB color of the font.</param>
