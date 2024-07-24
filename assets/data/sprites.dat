@@ -25,4 +25,4 @@ define Sprite {
 <Sprite name="Hills" x="0" y="0" w="192" h="108" spriteSheet="Backgrounds">
 <Sprite name="Sky" x="192" y="0" w="192" h="108" spriteSheet="Backgrounds">
 <Sprite name="DefaultCursor" x="0" y="0" w="13" h="13" spriteSheet="Misc">
-<Sprite name="Pickaxe" x="16" y="0" w="32" h="32" spriteSheet="Misc">
+<Sprite name="Pickaxe" x="16" y="0" w="16" h="16" spriteSheet="Misc">

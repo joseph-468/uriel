@@ -162,7 +162,7 @@ namespace Uriel {
 		if (spriteId == 0) return;
 		SDL_Rect src = sprites[spriteId - 1].src;
 		SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
-		SDL_FPoint pivot = { dst.w / 2, dst.h };
+		SDL_FPoint pivot = { 0, dst.h };
 		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, rotation, &pivot, SDL_FLIP_NONE);
 	}
 

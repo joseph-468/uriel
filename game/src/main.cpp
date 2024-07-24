@@ -280,7 +280,7 @@ int main(int argc, char *argv[]) {
 		currentWorld.displayTiles(camera);
 
 		drawSprite(player.sprite.getSpriteId(), player.collisionBox.x, player.collisionBox.y, player.collisionBox.w, player.collisionBox.h);
-		drawSprite(getSpriteId("Pickaxe"), player.collisionBox.x + 12, player.collisionBox.y + 16, 48, 48, rot);
+		drawSprite(getSpriteId("Pickaxe"), player.collisionBox.x + 32, player.collisionBox.y + 12, 40, 40, rot);
 		drawRectangle(green, player.collisionBox.x - player.collisionBox.w / 2, player.collisionBox.y - player.collisionBox.h / 2, player.collisionBox.w, player.collisionBox.h, 1);
 
 		drawAnimatedSprite(bat.sprite, bat.collisionBox.x, bat.collisionBox.y, bat.collisionBox.w, bat.collisionBox.h);
