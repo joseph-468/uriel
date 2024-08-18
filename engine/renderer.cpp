@@ -156,17 +156,34 @@ namespace Uriel {
 		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
 	}
 
-
-	// Rotation implementation is only temporary.
-	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const float rotation) {
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const double angle, const SDL_FPoint center) {
 		if (spriteId == 0) return;
-		SDL_Rect src = sprites[spriteId - 1].src;
-		SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
-		SDL_FPoint pivot = { 0, dst.h };
-		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, rotation, &pivot, SDL_FLIP_NONE);
+		const SDL_Rect src = sprites[spriteId - 1].src;
+		const SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
+		SDL_FPoint centerInPixels = { (center.x + 1) * dst.w / 2, dst.h - (center.y + 1) * dst.h / 2 };
+		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, angle, &centerInPixels, SDL_FLIP_NONE);
+	}
+
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const double angle) {
+		drawSprite(spriteId, x, y, width, height, angle, { 0, 0 });
+	}
+
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height) {
+		if (spriteId == 0) return;
+		const SDL_Rect src = sprites[spriteId - 1].src;
+		const SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
+		SDL_RenderCopyExF(renderer, spriteSheets[sprites[spriteId - 1].spriteSheetId].texture, &src, &dst, 0, nullptr, SDL_FLIP_NONE);
 	}
 
 	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height) {
+		drawAnimatedSprite(animatedSprite, x, y, width, height, 0, { 0, 0 } );
+	}
+
+	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height, const double angle) {
+		drawAnimatedSprite(animatedSprite, x, y, width, height, angle, { 0, 0 } );
+	}
+
+	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height, const double angle, const SDL_FPoint center) {
 		if (animatedSprite.getSpriteId() == 0) return;
 		float cameraScaleX = viewport.w / activeCamera->width;
 		float cameraScaleY = viewport.h / activeCamera->height;
@@ -182,8 +199,9 @@ namespace Uriel {
 		src.x += static_cast<int>(totalOffset % sprite.frameCount * src.w);
 
 		SDL_FRect dst = getScreenSpaceRectCentered(x, y, width, height);
+		SDL_FPoint centerInPixels = { (center.x + 1) * dst.w / 2, dst.h - (center.y + 1) * dst.h / 2 };
 
-		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, NULL, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyExF(renderer, spriteSheets[sprite.spriteSheetId].texture, &src, &dst, angle, &centerInPixels, SDL_FLIP_NONE);
 	}
 
 	void drawFilledRectangle(const Color color, const float x, const float y, const float width, const float height) {

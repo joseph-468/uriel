@@ -411,7 +411,32 @@ namespace Uriel {
 	/// <param name="y">The y position of the sprite in game units.</param>
 	/// <param name="width">The width of the sprite in game units.</param>
 	/// <param name="height">The height of the sprite in game units.</param>
-	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const float rotation = 0);
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height);
+
+	/// <summary>
+	/// Draws a sprite to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
+	/// </summary>
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in game units.</param>
+	/// <param name="y">The y position of the sprite in game units.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	/// <param name="angle">The number of degrees the sprite will be rotated around it's pivot.</param>
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const double angle);
+
+	/// <summary>
+	/// Draws a sprite to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
+	/// </summary>
+	/// <param name="spriteId">The id of the sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in game units.</param>
+	/// <param name="y">The y position of the sprite in game units.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	/// <param name="angle">The number of degrees the sprite will be rotated around it's pivot.</param>
+	/// <param name="center">The pivot point for rotation.</param>
+	void drawSprite(const Uint16 spriteId, const float x, const float y, const float width, const float height, const double angle, const SDL_FPoint center);
 
 	/// <summary>
 	/// Draws a sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
@@ -443,6 +468,31 @@ namespace Uriel {
 	/// <param name="width">The width of the sprite in game units.</param>
 	/// <param name="height">The height of the sprite in game units.</param>
 	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height);
+
+	/// <summary>
+	/// Draws an animated sprite to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
+	/// </summary>
+	/// <param name="animatedSprite">A refernece to the animated sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in game units.</param>
+	/// <param name="y">The y position of the sprite in game units.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	/// <param name="angle">The number of degrees the sprite will be rotated around it's pivot.</param>
+	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height, const double angle);
+
+	/// <summary>
+	/// Draws an animated sprite to the screen in world space with the x and y coordinates 0, 0 being in the complete center of the world.
+	/// The sprite is automatically centered. This means that a sprite at coordinates 0, 0 would be completely centered in the screen (assuming camera is also at 0, 0).
+	/// </summary>
+	/// <param name="animatedSprite">A refernece to the animated sprite that will be drawn.</param>
+	/// <param name="x">The x position of the sprite in game units.</param>
+	/// <param name="y">The y position of the sprite in game units.</param>
+	/// <param name="width">The width of the sprite in game units.</param>
+	/// <param name="height">The height of the sprite in game units.</param>
+	/// <param name="angle">The number of degrees the sprite will be rotated around it's pivot.</param>
+	/// <param name="center">The pivot point for rotation.</param>
+	void drawAnimatedSprite(AnimatedSprite &animatedSprite, const float x, const float y, const float width, const float height, const double angle, const SDL_FPoint center);
 
 	/// <summary>
 	/// Draws an animated sprite to the screen in pixel space with the x and y coordinates 0, 0 being in the top left of the screen. 
@@ -526,5 +576,4 @@ namespace Uriel {
 	/// <param name="fontSize">The width and height of the font in pixels.</param>
 	/// <param name="color">The RGB color of the font.</param>
 	void renderText(const std::string &text, const int x, const int y, const int fontSize, const Color color);
-
 }

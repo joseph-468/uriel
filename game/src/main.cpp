@@ -15,7 +15,6 @@ void displayFPS() {
 	renderText(text.c_str(), 0, 0, 24, { 128, 255, 128 });
 }
 
-
 int main(int argc, char *argv[]) {
 	init(1280, 720, "Uriel Test");
 
@@ -182,24 +181,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (attacking) {
-			// Rotating version
 			rot += deltaTime;
-
-			// "realistic" version
-			/*
-			if (down) {
-				rot += deltaTime / 4;
-			}
-			else {
-				rot -= deltaTime / 4;
-			}
-			if (rot >= 90 && down) {
-				down = false;
-			}
-			else if (rot <= -45 && !down) {
-				down = true;
-			}
-			*/
 		}
 		else {
 			rot = 0;
@@ -280,7 +262,7 @@ int main(int argc, char *argv[]) {
 		currentWorld.displayTiles(camera);
 
 		drawSprite(player.sprite.getSpriteId(), player.collisionBox.x, player.collisionBox.y, player.collisionBox.w, player.collisionBox.h);
-		drawSprite(getSpriteId("Pickaxe"), player.collisionBox.x + 32, player.collisionBox.y + 12, 40, 40, rot);
+		drawSprite(getSpriteId("Pickaxe"), player.collisionBox.x + 32, player.collisionBox.y + 12, 40, 40, rot, { -1, -1 });
 		drawRectangle(green, player.collisionBox.x - player.collisionBox.w / 2, player.collisionBox.y - player.collisionBox.h / 2, player.collisionBox.w, player.collisionBox.h, 1);
 
 		drawAnimatedSprite(bat.sprite, bat.collisionBox.x, bat.collisionBox.y, bat.collisionBox.w, bat.collisionBox.h);
