@@ -206,7 +206,7 @@ namespace Uriel {
 
 	void drawFilledRectangle(const Color color, const float x, const float y, const float width, const float height) {
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-		SDL_FRect dst = getScreenSpaceRect(x, y, width, height);
+		SDL_FRect dst = getScreenSpaceRect(x - width / 2, y - height / 2, width, height);
 		SDL_RenderFillRectF(renderer, &dst);
 	}
 
@@ -218,8 +218,8 @@ namespace Uriel {
 
 	void drawRectangle(const Color color, const float x, const float y, const float width, const float height, const float thickness) {
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-		SDL_FRect rect = getScreenSpaceRect(x, y, width, height);
-		SDL_FRect dst = getScreenSpaceRect(x, y, width, height);
+		SDL_FRect rect = getScreenSpaceRect(x - width / 2, y - height / 2, width, height);
+		SDL_FRect dst = rect;
 		float cameraScaleX = viewport.w / activeCamera->width;
 		float cameraScaleY = viewport.h / activeCamera->height;
 		float dstThickness = round(thickness * cameraScaleY);

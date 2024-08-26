@@ -24,6 +24,7 @@
     <ClCompile Include="engine\renderer.cpp" />
     <ClCompile Include="engine\sprite.cpp" />
     <ClCompile Include="engine\text_renderer.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\internal.h" />

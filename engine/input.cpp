@@ -22,6 +22,12 @@ namespace Uriel {
 		return true;
 	}
 
+	SDL_Point getMousePosition() {
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+		return { x, y };
+	}
+
 	bool isKeyDown(const SDL_Scancode key) {
 		return currentKeyboardState[key] == SDL_PRESSED;
 	}

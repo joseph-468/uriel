@@ -338,6 +338,12 @@ namespace Uriel {
 	bool isKeyReleased(const SDL_Scancode key);
 
 	/// <summary>
+	/// Returns the current position of the mouse in pixels with 0, 0 being the top left of the screen.
+	/// </summary>
+	/// <returns>The current mouse position.</returns>
+	SDL_Point getMousePosition();
+
+	/// <summary>
 	/// Checks whether a mouse button is currently held down.
 	/// </summary>
 	/// <param name="button">The mouse button to be checked.</param>
