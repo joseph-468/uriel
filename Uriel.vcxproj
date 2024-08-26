@@ -19,24 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\text_renderer.cpp" />
+    <ClCompile Include="engine\core.cpp" />
     <ClCompile Include="engine\input.cpp" />
     <ClCompile Include="engine\renderer.cpp" />
     <ClCompile Include="engine\sprite.cpp" />
-    <ClCompile Include="engine\core.cpp" />
-    <ClCompile Include="game\src\external_data.cpp" />
-    <ClCompile Include="game\src\game.cpp" />
-    <ClCompile Include="game\src\main.cpp" />
-    <ClCompile Include="game\src\tile.cpp" />
-    <ClCompile Include="game\src\world.cpp" />
+    <ClCompile Include="engine\text_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\internal.h" />
     <ClInclude Include="engine\uriel.h" />
-    <ClInclude Include="game\include\external_data.h" />
-    <ClInclude Include="game\include\game.h" />
-    <ClInclude Include="game\include\tile.h" />
-    <ClInclude Include="game\include\world.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -1,69 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="engine">
-      <UniqueIdentifier>{ca39f6a7-19e3-4c7b-b2c4-c2c3c7ab754d}</UniqueIdentifier>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{0df2e8ca-7fb8-48f0-bb11-5d4ab8e68f61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game">
-      <UniqueIdentifier>{3051589d-daed-44db-b275-bbf585ed3f62}</UniqueIdentifier>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{8f941adb-a590-45b2-bb15-b3b6f94a4b2e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\include">
-      <UniqueIdentifier>{f568cd67-90ee-4a5b-9958-9346819b9424}</UniqueIdentifier>
+    <Filter Include="Uriel">
+      <UniqueIdentifier>{bc0fbaec-99c5-4d7c-acd9-a15e4398bea6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\src">
-      <UniqueIdentifier>{e6be72c8-2871-407d-ade7-a99304cc1a64}</UniqueIdentifier>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d4a20cc7-f9a8-412b-96fc-235c66c794d9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\renderer.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\sprite.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
     <ClCompile Include="engine\core.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="game\src\game.cpp">
-      <Filter>game\src</Filter>
-    </ClCompile>
-    <ClCompile Include="game\src\main.cpp">
-      <Filter>game\src</Filter>
-    </ClCompile>
-    <ClCompile Include="game\src\tile.cpp">
-      <Filter>game\src</Filter>
-    </ClCompile>
-    <ClCompile Include="game\src\world.cpp">
-      <Filter>game\src</Filter>
+      <Filter>Uriel</Filter>
     </ClCompile>
     <ClCompile Include="engine\input.cpp">
-      <Filter>engine</Filter>
+      <Filter>Uriel</Filter>
     </ClCompile>
-    <ClCompile Include="game\src\external_data.cpp">
-      <Filter>game\src</Filter>
+    <ClCompile Include="engine\renderer.cpp">
+      <Filter>Uriel</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\sprite.cpp">
+      <Filter>Uriel</Filter>
     </ClCompile>
     <ClCompile Include="engine\text_renderer.cpp">
-      <Filter>engine</Filter>
+      <Filter>Uriel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\uriel.h">
-      <Filter>engine</Filter>
-    </ClInclude>
-    <ClInclude Include="game\include\game.h">
-      <Filter>game\include</Filter>
-    </ClInclude>
-    <ClInclude Include="game\include\tile.h">
-      <Filter>game\include</Filter>
-    </ClInclude>
-    <ClInclude Include="game\include\world.h">
-      <Filter>game\include</Filter>
-    </ClInclude>
     <ClInclude Include="engine\internal.h">
-      <Filter>engine</Filter>
+      <Filter>Uriel</Filter>
     </ClInclude>
-    <ClInclude Include="game\include\external_data.h">
-      <Filter>game\include</Filter>
+    <ClInclude Include="engine\uriel.h">
+      <Filter>Uriel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

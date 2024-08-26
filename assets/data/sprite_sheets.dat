@@ -1,9 +1,0 @@
-define SpriteSheet {
-	name,
-	filepath,
-}
-
-<SpriteSheet name="Backgrounds" filepath="assets/textures/backgrounds.png">
-<SpriteSheet name="Tiles" filepath="assets/textures/tiles.png">
-<SpriteSheet name="Entities" filepath="assets/textures/entities.png">
-<SpriteSheet name="Misc" filepath="assets/textures/misc.png">
